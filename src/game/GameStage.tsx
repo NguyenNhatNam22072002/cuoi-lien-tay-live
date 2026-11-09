@@ -228,9 +228,9 @@ export function GameStage({ game }: { game: GameState }) {
           <div className="rw-price-row special-dp">
             <div className="rw-price-item-left">
               <span className="rw-price-item-icon">🏰</span>
-              <span className="rw-price-item-name">Pháo Giấy (Động Phòng)</span>
+              <span className="rw-price-item-name">Động Phòng Hoa Chúc</span>
             </div>
-            <span className="rw-price-tag" style={{ background: '#fb7185', color: '#3f0413' }}>100 xu</span>
+            <span className="rw-price-tag" style={{ background: '#fb7185', color: '#3f0413' }}>150 xu</span>
           </div>
           <div className="rw-price-row">
             <div className="rw-price-item-left">
@@ -381,10 +381,10 @@ export function GameStage({ game }: { game: GameState }) {
             <span className="rw-btn-label">Cưới MC</span>
             <span className="rw-btn-cost">99 xu</span>
           </button>
-          <button className="rw-challenge-btn rw-btn-crimson" onClick={() => game.triggerChallenge('dong_phong', undefined, 100)}>
+          <button className="rw-challenge-btn rw-btn-crimson" onClick={() => game.triggerChallenge('dong_phong', undefined, 150)}>
             <span className="rw-btn-icon">🏰</span>
             <span className="rw-btn-label">Động Phòng</span>
-            <span className="rw-btn-cost">100 xu</span>
+            <span className="rw-btn-cost">150 xu</span>
           </button>
           <button className="rw-challenge-btn rw-btn-indigo" onClick={() => game.triggerChallenge('dance', undefined, 30)}>
             <span className="rw-btn-icon">🍑</span>
@@ -411,12 +411,12 @@ export function GameStage({ game }: { game: GameState }) {
         {/* Ticker chạy chữ ngang hướng dẫn donate */}
         <div className="rw-ticker-banner">
           <div className="rw-ticker-track">
-            🌾 Tặng Cỏ 4 Lá (10 xu) làm Cô Dâu · Tặng Chú Heo (10 xu) làm Chú Rể · Tặng Quả Đào (30 xu) lên Sàn Nhảy · Tặng Hạc Giấy (99 xu) để Hủy Hôn · Tặng Bắn Tim (99 xu) để Cưới MC · Tặng Pháo Giấy (100 xu) Vào Động Phòng · Tặng Hoa Hồng (1 xu) mừng 1 Chỉ Vàng 🌾
+            🌾 Tặng Cỏ 4 Lá (10 xu) làm Cô Dâu · Tặng Chú Heo (10 xu) làm Chú Rể · Tặng Quả Đào (30 xu) lên Sàn Nhảy · Tặng Hạc Giấy (99 xu) để Hủy Hôn · Tặng Bắn Tim (99 xu) để Cưới MC · Tặng 150 xu Vào Động Phòng · Tặng Hoa Hồng (1 xu) mừng 1 Chỉ Vàng 🌾
           </div>
         </div>
       </div>
 
-      {/* 10. MÀN ĐỘNG PHÒNG HOA CHÚC SIÊU VIP (500 XU) */}
+      {/* 10. MÀN ĐỘNG PHÒNG HOA CHÚC SIÊU VIP (150 XU) */}
       {game.dongPhong && (
         <div className="rw-dongphong-overlay">
           <img src="/assets/wedding/events/dongphong.jpg" className="rw-dongphong-bg" alt="Động phòng" />

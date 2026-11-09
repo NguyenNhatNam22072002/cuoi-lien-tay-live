@@ -36,8 +36,8 @@ export const GAME = {
       (n: N) => `M: Cứu tôi với bà con ơi! | Đang làm MC dẫn đám cưới thì bị ${n} tặng chín mươi chín xu bắt về dinh luôn! | Thôi thì em xin thuận theo duyên số! Cảm ơn ${n}!`,
     ],
     dongPhong: [
-      (n: N, g: N, b: N) => `M: Động phòng hoa chúc! | Cảm ơn đại gia ${n} đã tài trợ một trăm xu mở phòng loan cho đôi uyên ương! | Chúc ${g} và ${b} trăm năm hòa hợp, sớm sinh quý tử!`,
-      (n: N) => `M: Mở cửa động phòng! | Cảm ơn món quà một trăm xu của ${n}! | Giờ phút ngọt ngào nhất của đôi uyên ương xin được bắt đầu!`,
+      (n: N, g: N, b: N) => `M: Động phòng hoa chúc! | Cảm ơn đại gia ${n} đã tài trợ một trăm năm mươi xu mở phòng loan cho đôi uyên ương! | Chúc ${g} và ${b} trăm năm hòa hợp, sớm sinh quý tử!`,
+      (n: N) => `M: Mở cửa động phòng! | Cảm ơn món quà một trăm năm mươi xu của ${n}! | Giờ phút ngọt ngào nhất của đôi uyên ương xin được bắt đầu!`,
     ],
     makeGroom: [
       (n: N) => `M: Chú rể mới đã xuất hiện rồi bà con ơi! | Xin nhiệt liệt chúc mừng chú rể ${n} đã tặng Chú Heo mười xu và bước lên lễ đường!`,

@@ -182,7 +182,7 @@ export function useGame() {
       const gName = groom?.name || 'Chú Rể';
       const bName = bride?.name || 'Cô Dâu';
       setDongPhong({ donor: u.name, donorAvatar: u.avatar, groom: gName, bride: bName, until: Date.now() + 20000 });
-      showNotice('🏰 ĐỘNG PHÒNG HOA CHÚC!', `${u.name} tài trợ 100 xu mở phòng loan!`, '💖', 8000);
+      showNotice('🏰 ĐỘNG PHÒNG HOA CHÚC!', `${u.name} tài trợ 150 xu mở phòng loan!`, '💖', 8000);
       voice.say(pick(GAME.challenges.dongPhong)!(speakableName(u.name), gName, bName), true);
     } else if (type === 'make_groom') {
       setGroom(u);
@@ -1024,7 +1024,7 @@ export function useGame() {
 
       // Kích hoạt thử thách donate viral (Chuẩn giá quà TikTok Việt Nam)
       const gNameLower = (e.giftName || '').toLowerCase();
-      if (coins >= 100 || gNameLower.includes('động phòng') || gNameLower.includes('dong phong') || gNameLower.includes('pháo giấy') || gNameLower.includes('lâu đài')) {
+      if (coins >= 150 || gNameLower.includes('động phòng') || gNameLower.includes('dong phong') || gNameLower.includes('lâu đài')) {
         triggerChallenge('dong_phong', { id, name, avatar: e.avatar }, coins);
       } else if (gNameLower.includes('cưới mc') || gNameLower.includes('cuoi mc') || gNameLower.includes('bắn tim') || gNameLower.includes('kính râm')) {
         triggerChallenge('marry_mc', { id, name, avatar: e.avatar }, coins);
