@@ -28,35 +28,35 @@ export const GAME = {
   chatterQuietMs: 1500, // MC im 1,5 giây là nói tiếp (chủ kênh muốn MC nói nhiều)
   shareReminderEveryMs: 4 * 60_000,
 
-  // ---------- Thử thách quà tặng Donate ----------
+  // ---------- Thử thách quà tặng Donate (Chuẩn TikTok Việt Nam) ----------
   challenges: {
     marryMC: [
-      (n: N) => `M: Ôi trời ơi bà con ơi! | ${n} vừa tặng năm mươi xu rước MC về làm vợ luôn rồi! | Em xin phép nhận lời nha! Cảm ơn ${n} nhiều!`,
-      (n: N) => `M: Bất ngờ chưa bà con! | ${n} chi hẳn năm mươi xu cưới luôn MC! | Từ giây phút này MC chính thức là người của ${n} nha!`,
-      (n: N) => `M: Cứu tôi với bà con ơi! | Đang làm MC dẫn đám cưới thì bị ${n} tặng năm mươi xu bắt về dinh luôn! | Thôi thì em xin thuận theo duyên số! Cảm ơn ${n}!`,
+      (n: N) => `M: Ôi trời ơi bà con ơi! | ${n} vừa tặng chín mươi chín xu rước MC về làm vợ luôn rồi! | Em xin phép nhận lời nha! Cảm ơn ${n} nhiều!`,
+      (n: N) => `M: Bất ngờ chưa bà con! | ${n} chi hẳn chín mươi chín xu bắn tim cưới luôn MC! | Từ giây phút này MC chính thức là người của ${n} nha!`,
+      (n: N) => `M: Cứu tôi với bà con ơi! | Đang làm MC dẫn đám cưới thì bị ${n} tặng chín mươi chín xu bắt về dinh luôn! | Thôi thì em xin thuận theo duyên số! Cảm ơn ${n}!`,
     ],
     dongPhong: [
       (n: N, g: N, b: N) => `M: Động phòng hoa chúc! | Cảm ơn đại gia ${n} đã tài trợ một trăm xu mở phòng loan cho đôi uyên ương! | Chúc ${g} và ${b} trăm năm hòa hợp, sớm sinh quý tử!`,
       (n: N) => `M: Mở cửa động phòng! | Cảm ơn món quà một trăm xu của ${n}! | Giờ phút ngọt ngào nhất của đôi uyên ương xin được bắt đầu!`,
     ],
     makeGroom: [
-      (n: N) => `M: Chú rể mới đã xuất hiện rồi bà con ơi! | Xin nhiệt liệt chúc mừng chú rể ${n} đã tặng Chú Heo may mắn và bước lên lễ đường!`,
-      (n: N) => `M: ${n} vừa tặng Chú Heo để làm chú rể! | Chú rể đứng giữa bục đẹp trai phong độ quá bà con ơi!`,
+      (n: N) => `M: Chú rể mới đã xuất hiện rồi bà con ơi! | Xin nhiệt liệt chúc mừng chú rể ${n} đã tặng Chú Heo mười xu và bước lên lễ đường!`,
+      (n: N) => `M: ${n} vừa tặng Chú Heo mười xu để làm chú rể! | Chú rể đứng giữa bục đẹp trai phong độ quá bà con ơi!`,
     ],
     makeBride: [
-      (n: N) => `M: Cô dâu xinh đẹp tuyệt trần đã tới! | Chúc mừng cô dâu ${n} vừa tặng Cỏ Bốn Lá may mắn và bước lên sân khấu!`,
-      (n: N) => `M: Cả sảnh cùng đón chào cô dâu ${n}! | Diện bộ váy cưới trắng tinh khôi, đẹp không tì vết luôn bà con!`,
+      (n: N) => `M: Cô dâu xinh đẹp tuyệt trần đã tới! | Chúc mừng cô dâu ${n} vừa tặng Cỏ Bốn Lá mười xu và bước lên sân khấu!`,
+      (n: N) => `M: Cả sảnh cùng đón chào cô dâu ${n}! | Tặng Cỏ Bốn Lá mười xu diện bộ váy cưới trắng tinh khôi, đẹp không tì vết luôn bà con!`,
     ],
     cancelWedding: [
-      (n: N) => `M: Ôi kìa! ${n} vừa tặng quà hủy hôn rồi bà con ơi! | Đám cưới bị hủy rồi, ai muốn cưới thì tặng Chú Heo hoặc Cỏ Bốn Lá nha!`,
-      (n: N) => `M: Bão táp ập tới rồi! | ${n} tặng quà hủy hôn giải tán cô dâu chú rể luôn! | Sân khấu lại trống, mời đại gia tiếp theo lên cưới!`,
+      (n: N) => `M: Ôi kìa! ${n} vừa tặng Hạc Giấy chín mươi chín xu hủy hôn rồi bà con ơi! | Đám cưới bị hủy rồi, ai muốn cưới thì tặng Chú Heo hoặc Cỏ Bốn Lá mười xu nha!`,
+      (n: N) => `M: Bão táp ập tới rồi! | ${n} tặng Hạc Giấy hủy hôn giải tán cô dâu chú rể luôn! | Sân khấu lại trống, mời đại gia tiếp theo lên cưới!`,
     ],
     dance: [
-      (n: N) => `M: Nhạc lên, đèn lên! | Cảm ơn ${n} đã góp vui mở sàn quẩy! | Cả sảnh mình cùng lắc lư theo điệu nhạc nào!`,
-      (n: N) => `M: Quẩy hết mình đi bà con ơi! | ${n} vừa tặng quà quẩy sàn! | Hai ba cùng quẩy nào!`,
+      (n: N) => `M: Nhạc lên, đèn lên! | Cảm ơn ${n} đã tặng ba mươi xu mở sàn quẩy! | Cả sảnh mình cùng lắc lư theo điệu nhạc nào!`,
+      (n: N) => `M: Quẩy hết mình đi bà con ơi! | ${n} vừa tặng ba mươi xu quẩy sàn! | Hai ba cùng quẩy nào!`,
     ],
     goldTael: [
-      (n: N) => `M: Cảm ơn ${n} đã mừng một chỉ vàng cho ngày vui hôm nay!`,
+      (n: N) => `M: Cảm ơn ${n} đã tặng Hoa Hồng mừng một chỉ vàng cho ngày vui hôm nay!`,
       (n: N) => `M: Một chỉ vàng của ${n} đã được thêm vào bảng mừng cưới! Cảm ơn bạn rất nhiều!`,
     ],
   },

@@ -176,7 +176,7 @@ export function useGame() {
     const u = user || { id: 'khach_vip', name: 'Đại Gia VIP', avatar: '' };
     if (type === 'marry_mc') {
       setMcMarriedTo(u);
-      showNotice('💍 CƯỚI MC THÀNH CÔNG!', `${u.name} vừa tặng 50 xu cưới luôn MC!`, '🎤', 8000);
+      showNotice('💍 CƯỚI MC THÀNH CÔNG!', `${u.name} vừa tặng Bắn Tim (99 xu) cưới luôn MC!`, '🎤', 8000);
       voice.say(pick(GAME.challenges.marryMC)!(speakableName(u.name)), true);
     } else if (type === 'dong_phong') {
       const gName = groom?.name || 'Chú Rể';
@@ -186,30 +186,30 @@ export function useGame() {
       voice.say(pick(GAME.challenges.dongPhong)!(speakableName(u.name), gName, bName), true);
     } else if (type === 'make_groom') {
       setGroom(u);
-      showNotice('🐷 CHÚ RỂ MỚI LÊN LỄ ĐƯỜNG!', `Chào đón chú rể ${u.name}!`, '👑', 6000);
+      showNotice('🐷 CHÚ RỂ MỚI LÊN LỄ ĐƯỜNG!', `Chào đón chú rể ${u.name} tặng Chú Heo (10 xu)!`, '👑', 6000);
       voice.say(pick(GAME.challenges.makeGroom)!(speakableName(u.name)), true);
     } else if (type === 'make_bride') {
       setBride(u);
-      showNotice('🍀 CÔ DÂU MỚI LÊN LỄ ĐƯỜNG!', `Chào đón cô dâu ${u.name}!`, '👰', 6000);
+      showNotice('🍀 CÔ DÂU MỚI LÊN LỄ ĐƯỜNG!', `Chào đón cô dâu ${u.name} tặng Cỏ 4 Lá (10 xu)!`, '👰', 6000);
       voice.say(pick(GAME.challenges.makeBride)!(speakableName(u.name)), true);
     } else if (type === 'cancel') {
       setGroom(null);
       setBride(null);
       setMcMarriedTo(null);
       setIsKissing(false);
-      showNotice('💔 ĐÁM CƯỚI ĐÃ BỊ HỦY!', `${u.name} vừa tặng quà hủy hôn!`, '🕊️', 6000);
+      showNotice('💔 ĐÁM CƯỚI ĐÃ BỊ HỦY!', `${u.name} vừa tặng Hạc Giấy (99 xu) hủy hôn!`, '🕊️', 6000);
       voice.say(pick(GAME.challenges.cancelWedding)!(speakableName(u.name)), true);
     } else if (type === 'dance') {
       setIsDancing(true);
       setTimeout(() => setIsDancing(false), 15000);
-      showNotice('💃 QUẨY CẢ SẢNH!', `${u.name} vừa mở sàn quẩy!`, '🍩', 5000);
+      showNotice('💃 QUẨY CẢ SẢNH!', `${u.name} vừa tặng Quả Đào (30 xu) mở sàn quẩy!`, '🍑', 5000);
       voice.say(pick(GAME.challenges.dance)!(speakableName(u.name)), true);
     } else if (type === 'kiss') {
       setIsKissing(true);
       setTimeout(() => setIsKissing(false), 12000);
       showNotice('💋 KHOẢNH KHẮC NGỌT NGÀO!', 'Chú rể hôn cô dâu — mọi người cùng chúc mừng!', '💕', 8000);
     } else if (type === 'gold') {
-      showNotice('🌹 MỪNG 1 CHỈ VÀNG!', `${u.name} mừng 1 chỉ vàng vào ngày vui!`, '🥇', 5000);
+      showNotice('🌹 MỪNG 1 CHỈ VÀNG!', `${u.name} tặng Hoa Hồng mừng 1 chỉ vàng!`, '🥇', 5000);
       voice.say(pick(GAME.challenges.goldTael)!(speakableName(u.name)), false);
     }
   };
@@ -284,11 +284,11 @@ export function useGame() {
         const g = realGuests[Math.floor(Math.random() * realGuests.length)];
         const r = Math.random();
         if (r < 0.45) {
-          // Góp vui nhảy (20 xu)
+          // Góp vui nhảy (30 xu)
           setIsDancing(true);
           setTimeout(() => setIsDancing(false), 14000);
-          showNotice('💃 QUẨY CẢ SẢNH!', `${g.name} vừa mở sàn quẩy!`, '🍩', 5000);
-          voice.say(`M: Cả sảnh cùng quẩy lên nào bà con ơi! | Cảm ơn ${g.name} đã mở sàn nhảy!`, false);
+          showNotice('💃 QUẨY CẢ SẢNH!', `${g.name} vừa tặng 30 xu mở sàn quẩy!`, '🍑', 5000);
+          voice.say(`M: Cả sảnh cùng quẩy lên nào bà con ơi! | Cảm ơn ${g.name} đã tặng ba mươi xu mở sàn nhảy!`, false);
         } else {
           // Mừng 1 chỉ vàng
           const prev = s.giftTotal.get(g.id);
@@ -1022,22 +1022,30 @@ export function useGame() {
       saveTop(s.giftTotal);
       setTop(topRows(s.giftTotal));
 
-      // Kích hoạt thử thách donate viral
+      // Kích hoạt thử thách donate viral (Chuẩn giá quà TikTok Việt Nam)
       const gNameLower = (e.giftName || '').toLowerCase();
-      if (coins >= 100 || gNameLower.includes('động phòng') || gNameLower.includes('dong phong') || gNameLower.includes('lâu đài') || gNameLower.includes('vũ trụ')) {
+      if (coins >= 100 || gNameLower.includes('động phòng') || gNameLower.includes('dong phong') || gNameLower.includes('pháo giấy') || gNameLower.includes('lâu đài')) {
         triggerChallenge('dong_phong', { id, name, avatar: e.avatar }, coins);
-      } else if (coins >= 50 || gNameLower.includes('cưới mc') || gNameLower.includes('cuoi mc') || gNameLower.includes('mc')) {
+      } else if (gNameLower.includes('cưới mc') || gNameLower.includes('cuoi mc') || gNameLower.includes('bắn tim') || gNameLower.includes('kính râm')) {
         triggerChallenge('marry_mc', { id, name, avatar: e.avatar }, coins);
-      } else if (gNameLower.includes('hạc') || gNameLower.includes('hủy') || gNameLower.includes('huy') || gNameLower.includes('swan') || gNameLower.includes('crane')) {
+      } else if (gNameLower.includes('hạc') || gNameLower.includes('hủy') || gNameLower.includes('huy') || gNameLower.includes('crane')) {
         triggerChallenge('cancel', { id, name, avatar: e.avatar }, coins);
-      } else if (coins >= 50 || gNameLower.includes('cỏ') || gNameLower.includes('heo') || gNameLower.includes('pig') || gNameLower.includes('clover')) {
-        if (gNameLower.includes('heo') || gNameLower.includes('pig')) {
+      } else if (gNameLower.includes('heo') || gNameLower.includes('pig') || (coins === 10 && (gNameLower.includes('chú rể') || gNameLower.includes('rể')))) {
+        triggerChallenge('make_groom', { id, name, avatar: e.avatar }, coins);
+      } else if (gNameLower.includes('cỏ') || gNameLower.includes('clover') || (coins === 10 && (gNameLower.includes('cô dâu') || gNameLower.includes('dâu')))) {
+        triggerChallenge('make_bride', { id, name, avatar: e.avatar }, coins);
+      } else if (coins >= 30 || gNameLower.includes('donut') || gNameLower.includes('đào') || gNameLower.includes('dao') || gNameLower.includes('peach') || gNameLower.includes('nhảy')) {
+        triggerChallenge('dance', { id, name, avatar: e.avatar }, coins);
+      } else if (coins === 10) {
+        // Nếu 10 xu mà không rõ tên quà: phân bổ ngẫu nhiên làm chú rể hoặc cô dâu
+        if (Math.random() < 0.5) {
           triggerChallenge('make_groom', { id, name, avatar: e.avatar }, coins);
         } else {
           triggerChallenge('make_bride', { id, name, avatar: e.avatar }, coins);
         }
-      } else if (coins >= 20 || gNameLower.includes('donut') || gNameLower.includes('đào') || gNameLower.includes('dao') || gNameLower.includes('nhảy')) {
-        triggerChallenge('dance', { id, name, avatar: e.avatar }, coins);
+      } else if (coins === 99) {
+        // 99 xu trên TikTok là Hạc Giấy hoặc Bắn Tim
+        triggerChallenge('cancel', { id, name, avatar: e.avatar }, coins);
       } else {
         triggerChallenge('gold', { id, name, avatar: e.avatar }, coins);
       }

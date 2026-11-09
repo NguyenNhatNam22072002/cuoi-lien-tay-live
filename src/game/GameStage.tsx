@@ -186,56 +186,56 @@ export function GameStage({ game }: { game: GameState }) {
         </div>
       </div>
 
-      {/* 4.2 BẢNG GIÁ THỬ THÁCH DONATE (CỘT PHẢI - GIỐNG ẢNH 4) */}
+      {/* 4.2 BẢNG GIÁ THỬ THÁCH DONATE (CỘT PHẢI - CHUẨN GIÁ QUÀ TIKTOK VIỆT NAM) */}
       <div className="rw-price-card">
-        <div className="rw-price-header">🎁 BẢNG GIÁ THỬ THÁCH</div>
+        <div className="rw-price-header">🎁 BẢNG GIÁ QUÀ TIKTOK</div>
         <div className="rw-price-list">
           <div className="rw-price-row">
             <div className="rw-price-item-left">
               <span className="rw-price-item-icon">🍀</span>
-              <span className="rw-price-item-name">Làm Cô Dâu</span>
+              <span className="rw-price-item-name">Cỏ 4 Lá (Làm Dâu)</span>
             </div>
-            <span className="rw-price-tag">50 xu</span>
+            <span className="rw-price-tag">10 xu</span>
           </div>
           <div className="rw-price-row">
             <div className="rw-price-item-left">
               <span className="rw-price-item-icon">🐷</span>
-              <span className="rw-price-item-name">Làm Chú Rể</span>
+              <span className="rw-price-item-name">Chú Heo (Làm Rể)</span>
             </div>
-            <span className="rw-price-tag">50 xu</span>
-          </div>
-          <div className="rw-price-row special-mc">
-            <div className="rw-price-item-left">
-              <span className="rw-price-item-icon">🎤</span>
-              <span className="rw-price-item-name">Cưới Luôn MC</span>
-            </div>
-            <span className="rw-price-tag" style={{ background: '#c084fc', color: '#1e053a' }}>50 xu</span>
-          </div>
-          <div className="rw-price-row special-dp">
-            <div className="rw-price-item-left">
-              <span className="rw-price-item-icon">🏠</span>
-              <span className="rw-price-item-name">Vào Động Phòng</span>
-            </div>
-            <span className="rw-price-tag" style={{ background: '#fb7185', color: '#3f0413' }}>100 xu</span>
+            <span className="rw-price-tag">10 xu</span>
           </div>
           <div className="rw-price-row">
             <div className="rw-price-item-left">
-              <span className="rw-price-item-icon">🕊️</span>
-              <span className="rw-price-item-name">Hủy Hôn</span>
+              <span className="rw-price-item-icon">🍑</span>
+              <span className="rw-price-item-name">Quả Đào / Donut (Nhảy)</span>
             </div>
             <span className="rw-price-tag">30 xu</span>
           </div>
           <div className="rw-price-row">
             <div className="rw-price-item-left">
-              <span className="rw-price-item-icon">🍩</span>
-              <span className="rw-price-item-name">Góp Vui Nhảy</span>
+              <span className="rw-price-item-icon">🕊️</span>
+              <span className="rw-price-item-name">Hạc Giấy (Hủy Hôn)</span>
             </div>
-            <span className="rw-price-tag">20 xu</span>
+            <span className="rw-price-tag">99 xu</span>
+          </div>
+          <div className="rw-price-row special-mc">
+            <div className="rw-price-item-left">
+              <span className="rw-price-item-icon">🎤</span>
+              <span className="rw-price-item-name">Bắn Tim (Cưới MC)</span>
+            </div>
+            <span className="rw-price-tag" style={{ background: '#c084fc', color: '#1e053a' }}>99 xu</span>
+          </div>
+          <div className="rw-price-row special-dp">
+            <div className="rw-price-item-left">
+              <span className="rw-price-item-icon">🏰</span>
+              <span className="rw-price-item-name">Pháo Giấy (Động Phòng)</span>
+            </div>
+            <span className="rw-price-tag" style={{ background: '#fb7185', color: '#3f0413' }}>100 xu</span>
           </div>
           <div className="rw-price-row">
             <div className="rw-price-item-left">
               <span className="rw-price-item-icon">🌹</span>
-              <span className="rw-price-item-name">Mừng Chỉ Vàng</span>
+              <span className="rw-price-item-name">Hoa Hồng (Mừng Vàng)</span>
             </div>
             <span className="rw-price-tag">1 xu</span>
           </div>
@@ -253,7 +253,7 @@ export function GameStage({ game }: { game: GameState }) {
       {/* Người tặng cưới MC đứng bên cạnh */}
       {game.mcMarriedTo && (
         <div className="rw-mc-partner">
-          <div className="rw-mc-partner-tag">💖 VỢ/CHỒNG MC (50 XU)</div>
+          <div className="rw-mc-partner-tag">💖 VỢ/CHỒNG MC (99 XU)</div>
           <img src="/assets/wedding/characters/guest_f1.png" className="rw-mc-img" alt={game.mcMarriedTo.name} />
         </div>
       )}
@@ -363,38 +363,38 @@ export function GameStage({ game }: { game: GameState }) {
         </div>
       )}
 
-      {/* 9. DÃY NÚT THỬ THÁCH DONATE Ở DƯỚI & TICKER BANNER */}
+      {/* 9. DÃY NÚT THỬ THÁCH DONATE Ở DƯỚI & TICKER BANNER (KHÔNG CÓ NÚT ĐỔI NHẠC) */}
       <div className="rw-bottom-panel">
         <div className="rw-challenge-row">
-          <button className="rw-challenge-btn rw-btn-emerald" onClick={() => game.triggerChallenge('make_bride', undefined, 50)}>
+          <button className="rw-challenge-btn rw-btn-emerald" onClick={() => game.triggerChallenge('make_bride', undefined, 10)}>
             <span className="rw-btn-icon">🍀</span>
             <span className="rw-btn-label">Làm Cô Dâu</span>
-            <span className="rw-btn-cost">50 xu</span>
+            <span className="rw-btn-cost">10 xu</span>
           </button>
-          <button className="rw-challenge-btn rw-btn-rose" onClick={() => game.triggerChallenge('make_groom', undefined, 50)}>
+          <button className="rw-challenge-btn rw-btn-rose" onClick={() => game.triggerChallenge('make_groom', undefined, 10)}>
             <span className="rw-btn-icon">🐷</span>
             <span className="rw-btn-label">Làm Chú Rể</span>
-            <span className="rw-btn-cost">50 xu</span>
+            <span className="rw-btn-cost">10 xu</span>
           </button>
-          <button className="rw-challenge-btn rw-btn-purple" onClick={() => game.triggerChallenge('marry_mc', undefined, 50)}>
+          <button className="rw-challenge-btn rw-btn-purple" onClick={() => game.triggerChallenge('marry_mc', undefined, 99)}>
             <span className="rw-btn-icon">🎤</span>
             <span className="rw-btn-label">Cưới MC</span>
-            <span className="rw-btn-cost">50 xu</span>
+            <span className="rw-btn-cost">99 xu</span>
           </button>
           <button className="rw-challenge-btn rw-btn-crimson" onClick={() => game.triggerChallenge('dong_phong', undefined, 100)}>
-            <span className="rw-btn-icon">🏠</span>
+            <span className="rw-btn-icon">🏰</span>
             <span className="rw-btn-label">Động Phòng</span>
             <span className="rw-btn-cost">100 xu</span>
           </button>
-          <button className="rw-challenge-btn rw-btn-rose" onClick={() => game.triggerChallenge('cancel', undefined, 30)}>
-            <span className="rw-btn-icon">🕊️</span>
-            <span className="rw-btn-label">Hủy Hôn</span>
+          <button className="rw-challenge-btn rw-btn-indigo" onClick={() => game.triggerChallenge('dance', undefined, 30)}>
+            <span className="rw-btn-icon">🍑</span>
+            <span className="rw-btn-label">Góp Vui Nhảy</span>
             <span className="rw-btn-cost">30 xu</span>
           </button>
-          <button className="rw-challenge-btn rw-btn-indigo" onClick={() => game.triggerChallenge('dance', undefined, 20)}>
-            <span className="rw-btn-icon">🍩</span>
-            <span className="rw-btn-label">Góp Vui Nhảy</span>
-            <span className="rw-btn-cost">20 xu</span>
+          <button className="rw-challenge-btn rw-btn-cyan" onClick={() => game.triggerChallenge('cancel', undefined, 99)}>
+            <span className="rw-btn-icon">🕊️</span>
+            <span className="rw-btn-label">Hủy Hôn</span>
+            <span className="rw-btn-cost">99 xu</span>
           </button>
           <button className="rw-challenge-btn rw-btn-pink" onClick={() => game.triggerChallenge('gold', undefined, 1)}>
             <span className="rw-btn-icon">🌹</span>
@@ -411,7 +411,7 @@ export function GameStage({ game }: { game: GameState }) {
         {/* Ticker chạy chữ ngang hướng dẫn donate */}
         <div className="rw-ticker-banner">
           <div className="rw-ticker-track">
-            🌾 Tặng Cỏ 4 Lá (50 xu) làm Cô Dâu · Tặng Chú Heo (50 xu) làm Chú Rể · Tặng 50 xu để Cưới MC · Tặng 100 xu Vào Động Phòng · Tặng Hạc Giấy (30 xu) để Hủy Hôn 🌾
+            🌾 Tặng Cỏ 4 Lá (10 xu) làm Cô Dâu · Tặng Chú Heo (10 xu) làm Chú Rể · Tặng Quả Đào (30 xu) lên Sàn Nhảy · Tặng Hạc Giấy (99 xu) để Hủy Hôn · Tặng Bắn Tim (99 xu) để Cưới MC · Tặng Pháo Giấy (100 xu) Vào Động Phòng · Tặng Hoa Hồng (1 xu) mừng 1 Chỉ Vàng 🌾
           </div>
         </div>
       </div>

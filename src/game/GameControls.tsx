@@ -98,25 +98,25 @@ export function GameControls({ stageCount = 0 }: { stageCount?: number }) {
         </p>
       )}
 
-      {/* 1. THỬ THÁCH DONATE VIRAL */}
+      {/* 1. THỬ THÁCH DONATE VIRAL (CHUẨN TIKTOK) */}
       <Row label="Thử Thách Live">
-        <B onClick={() => gift(anyone(), 50, 'Trái tim / Cưới MC')}>
-          🎤 Cưới MC (50 xu)
+        <B onClick={() => gift(anyone(), 10, 'Cỏ Bốn Lá')}>
+          🍀 Làm Cô Dâu (10 xu)
         </B>
-        <B onClick={() => gift(anyone(), 100, 'Lâu Đài / Động Phòng')}>
-          🏠 Vào Động Phòng (100 xu)
+        <B onClick={() => gift(anyone(), 10, 'Chú Heo May Mắn')}>
+          🐷 Làm Chú Rể (10 xu)
         </B>
-        <B onClick={() => gift(anyone(), 50, 'Chú Heo May Mắn')}>
-          🐷 Làm Chú Rể (50 xu)
+        <B onClick={() => gift(anyone(), 99, 'Bắn Tim / Cưới MC')}>
+          🎤 Cưới MC (99 xu)
         </B>
-        <B onClick={() => gift(anyone(), 50, 'Cỏ Bốn Lá')}>
-          🍀 Làm Cô Dâu (50 xu)
+        <B onClick={() => gift(anyone(), 100, 'Pháo Giấy / Động Phòng')}>
+          🏰 Vào Động Phòng (100 xu)
         </B>
-        <B onClick={() => gift(anyone(), 30, 'Hạc Giấy')}>
-          🕊️ Hủy Hôn (30 xu)
+        <B onClick={() => gift(anyone(), 30, 'Quả Đào')}>
+          🍑 Góp Vui Nhảy (30 xu)
         </B>
-        <B onClick={() => gift(anyone(), 20, 'Bánh Donut')}>
-          🍩 Góp Vui Nhảy (20 xu)
+        <B onClick={() => gift(anyone(), 99, 'Hạc Giấy')}>
+          🕊️ Hủy Hôn (99 xu)
         </B>
         <B onClick={() => gift(anyone(), 1, 'Hoa hồng')}>
           🌹 Mừng 1 Chỉ (1 xu)
