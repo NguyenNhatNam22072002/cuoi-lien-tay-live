@@ -69,12 +69,12 @@ export function GameControls({ stageCount = 0 }: { stageCount?: number }) {
       const r = Math.random();
 
       if (r < 0.08) {
-        // Cưới MC (200 xu)
-        gift(w, 200, 'Trái tim siêu cấp / Cưới MC');
+        // Cưới MC (50 xu)
+        gift(w, 50, 'Trái tim / Cưới MC');
       } else if (r < 0.16) {
-        // Làm Chú rể hoặc Cô dâu
-        if (Math.random() < 0.5) gift(w, 100, 'Chú Heo May Mắn');
-        else gift(w, 100, 'Cỏ Bốn Lá');
+        // Làm Chú rể hoặc Cô dâu (50 xu)
+        if (Math.random() < 0.5) gift(w, 50, 'Chú Heo May Mắn');
+        else gift(w, 50, 'Cỏ Bốn Lá');
       } else if (r < 0.28) {
         // Mừng hoa hồng (1 xu)
         gift(w, 1, 'Hoa hồng');
@@ -100,23 +100,23 @@ export function GameControls({ stageCount = 0 }: { stageCount?: number }) {
 
       {/* 1. THỬ THÁCH DONATE VIRAL */}
       <Row label="Thử Thách Live">
-        <B onClick={() => gift(anyone(), 200, 'Trái tim / Cưới MC')}>
-          🎤 Cưới MC (200 xu)
+        <B onClick={() => gift(anyone(), 50, 'Trái tim / Cưới MC')}>
+          🎤 Cưới MC (50 xu)
         </B>
-        <B onClick={() => gift(anyone(), 500, 'Lâu Đài / Động Phòng')}>
-          🏠 Vào Động Phòng (500 xu)
+        <B onClick={() => gift(anyone(), 100, 'Lâu Đài / Động Phòng')}>
+          🏠 Vào Động Phòng (100 xu)
         </B>
-        <B onClick={() => gift(anyone(), 100, 'Chú Heo May Mắn')}>
-          🐷 Làm Chú Rể (100 xu)
+        <B onClick={() => gift(anyone(), 50, 'Chú Heo May Mắn')}>
+          🐷 Làm Chú Rể (50 xu)
         </B>
-        <B onClick={() => gift(anyone(), 100, 'Cỏ Bốn Lá')}>
-          🍀 Làm Cô Dâu (100 xu)
+        <B onClick={() => gift(anyone(), 50, 'Cỏ Bốn Lá')}>
+          🍀 Làm Cô Dâu (50 xu)
         </B>
-        <B onClick={() => gift(anyone(), 100, 'Hạc Giấy')}>
-          🕊️ Hủy Hôn (100 xu)
+        <B onClick={() => gift(anyone(), 30, 'Hạc Giấy')}>
+          🕊️ Hủy Hôn (30 xu)
         </B>
-        <B onClick={() => gift(anyone(), 30, 'Bánh Donut')}>
-          🍩 Góp Vui Nhảy (30 xu)
+        <B onClick={() => gift(anyone(), 20, 'Bánh Donut')}>
+          🍩 Góp Vui Nhảy (20 xu)
         </B>
         <B onClick={() => gift(anyone(), 10, 'Nốt Nhạc')}>
           🎵 Đổi Nhạc (10 xu)

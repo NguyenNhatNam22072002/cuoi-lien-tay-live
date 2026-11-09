@@ -176,13 +176,13 @@ export function useGame() {
     const u = user || { id: 'khach_vip', name: 'Đại Gia VIP', avatar: '' };
     if (type === 'marry_mc') {
       setMcMarriedTo(u);
-      showNotice('💍 CƯỚI MC THÀNH CÔNG!', `${u.name} vừa tặng 200 xu cưới luôn MC!`, '🎤', 8000);
+      showNotice('💍 CƯỚI MC THÀNH CÔNG!', `${u.name} vừa tặng 50 xu cưới luôn MC!`, '🎤', 8000);
       voice.say(pick(GAME.challenges.marryMC)!(speakableName(u.name)), true);
     } else if (type === 'dong_phong') {
       const gName = groom?.name || 'Chú Rể';
       const bName = bride?.name || 'Cô Dâu';
       setDongPhong({ donor: u.name, donorAvatar: u.avatar, groom: gName, bride: bName, until: Date.now() + 20000 });
-      showNotice('🏰 ĐỘNG PHÒNG HOA CHÚC!', `${u.name} tài trợ 500 xu mở phòng loan!`, '💖', 8000);
+      showNotice('🏰 ĐỘNG PHÒNG HOA CHÚC!', `${u.name} tài trợ 100 xu mở phòng loan!`, '💖', 8000);
       voice.say(pick(GAME.challenges.dongPhong)!(speakableName(u.name), gName, bName), true);
     } else if (type === 'make_groom') {
       setGroom(u);
@@ -947,19 +947,19 @@ export function useGame() {
 
       // Kích hoạt thử thách donate viral
       const gNameLower = (e.giftName || '').toLowerCase();
-      if (coins >= 500 || gNameLower.includes('động phòng') || gNameLower.includes('dong phong') || gNameLower.includes('lâu đài') || gNameLower.includes('vũ trụ')) {
+      if (coins >= 100 || gNameLower.includes('động phòng') || gNameLower.includes('dong phong') || gNameLower.includes('lâu đài') || gNameLower.includes('vũ trụ')) {
         triggerChallenge('dong_phong', { id, name, avatar: e.avatar }, coins);
-      } else if (coins >= 200 || gNameLower.includes('cưới mc') || gNameLower.includes('cuoi mc') || gNameLower.includes('mc')) {
+      } else if (coins >= 50 || gNameLower.includes('cưới mc') || gNameLower.includes('cuoi mc') || gNameLower.includes('mc')) {
         triggerChallenge('marry_mc', { id, name, avatar: e.avatar }, coins);
       } else if (gNameLower.includes('hạc') || gNameLower.includes('hủy') || gNameLower.includes('huy') || gNameLower.includes('swan') || gNameLower.includes('crane')) {
         triggerChallenge('cancel', { id, name, avatar: e.avatar }, coins);
-      } else if (coins >= 100 || gNameLower.includes('cỏ') || gNameLower.includes('heo') || gNameLower.includes('pig') || gNameLower.includes('clover')) {
+      } else if (coins >= 50 || gNameLower.includes('cỏ') || gNameLower.includes('heo') || gNameLower.includes('pig') || gNameLower.includes('clover')) {
         if (gNameLower.includes('heo') || gNameLower.includes('pig')) {
           triggerChallenge('make_groom', { id, name, avatar: e.avatar }, coins);
         } else {
           triggerChallenge('make_bride', { id, name, avatar: e.avatar }, coins);
         }
-      } else if (coins >= 30 || gNameLower.includes('donut') || gNameLower.includes('đào') || gNameLower.includes('dao') || gNameLower.includes('nhảy')) {
+      } else if (coins >= 20 || gNameLower.includes('donut') || gNameLower.includes('đào') || gNameLower.includes('dao') || gNameLower.includes('nhảy')) {
         triggerChallenge('dance', { id, name, avatar: e.avatar }, coins);
       } else {
         triggerChallenge('gold', { id, name, avatar: e.avatar }, coins);

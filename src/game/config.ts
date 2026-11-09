@@ -31,13 +31,13 @@ export const GAME = {
   // ---------- Thử thách quà tặng Donate ----------
   challenges: {
     marryMC: [
-      (n: N) => `M: Ôi trời ơi bà con ơi! | ${n} vừa tặng hai trăm xu rước MC về làm vợ luôn rồi! | Em xin phép nhận lời nha! Cảm ơn ${n} nhiều!`,
-      (n: N) => `M: Bất ngờ chưa bà con! | ${n} chi hẳn hai trăm xu cưới luôn MC! | Từ giây phút này MC chính thức là người của ${n} nha!`,
-      (n: N) => `M: Cứu tôi với bà con ơi! | Đang làm MC dẫn đám cưới thì bị ${n} tặng hai trăm xu bắt về dinh luôn! | Thôi thì em xin thuận theo duyên số! Cảm ơn ${n}!`,
+      (n: N) => `M: Ôi trời ơi bà con ơi! | ${n} vừa tặng năm mươi xu rước MC về làm vợ luôn rồi! | Em xin phép nhận lời nha! Cảm ơn ${n} nhiều!`,
+      (n: N) => `M: Bất ngờ chưa bà con! | ${n} chi hẳn năm mươi xu cưới luôn MC! | Từ giây phút này MC chính thức là người của ${n} nha!`,
+      (n: N) => `M: Cứu tôi với bà con ơi! | Đang làm MC dẫn đám cưới thì bị ${n} tặng năm mươi xu bắt về dinh luôn! | Thôi thì em xin thuận theo duyên số! Cảm ơn ${n}!`,
     ],
     dongPhong: [
-      (n: N, g: N, b: N) => `M: Động phòng hoa chúc! | Cảm ơn đại gia ${n} đã tài trợ năm trăm xu mở phòng loan cho đôi uyên ương! | Chúc ${g} và ${b} trăm năm hòa hợp, sớm sinh quý tử!`,
-      (n: N) => `M: Mở cửa động phòng! | Cảm ơn món quà khủng năm trăm xu của ${n}! | Giờ phút ngọt ngào nhất của đôi uyên ương xin được bắt đầu!`,
+      (n: N, g: N, b: N) => `M: Động phòng hoa chúc! | Cảm ơn đại gia ${n} đã tài trợ một trăm xu mở phòng loan cho đôi uyên ương! | Chúc ${g} và ${b} trăm năm hòa hợp, sớm sinh quý tử!`,
+      (n: N) => `M: Mở cửa động phòng! | Cảm ơn món quà một trăm xu của ${n}! | Giờ phút ngọt ngào nhất của đôi uyên ương xin được bắt đầu!`,
     ],
     makeGroom: [
       (n: N) => `M: Chú rể mới đã xuất hiện rồi bà con ơi! | Xin nhiệt liệt chúc mừng chú rể ${n} đã tặng Chú Heo may mắn và bước lên lễ đường!`,
@@ -52,8 +52,8 @@ export const GAME = {
       (n: N) => `M: Bão táp ập tới rồi! | ${n} tặng quà hủy hôn giải tán cô dâu chú rể luôn! | Sân khấu lại trống, mời đại gia tiếp theo lên cưới!`,
     ],
     dance: [
-      (n: N) => `M: Nhạc lên, đèn lên! | Cảm ơn ${n} đã góp vui ba mươi xu mở sàn quẩy! | Cả sảnh mình cùng lắc lư theo điệu nhạc nào!`,
-      (n: N) => `M: Quẩy hết mình đi bà con ơi! | ${n} vừa tặng ba mươi xu quẩy sàn! | Hai ba cùng quẩy nào!`,
+      (n: N) => `M: Nhạc lên, đèn lên! | Cảm ơn ${n} đã góp vui mở sàn quẩy! | Cả sảnh mình cùng lắc lư theo điệu nhạc nào!`,
+      (n: N) => `M: Quẩy hết mình đi bà con ơi! | ${n} vừa tặng quà quẩy sàn! | Hai ba cùng quẩy nào!`,
     ],
     goldTael: [
       (n: N) => `M: Cảm ơn ${n} đã mừng một chỉ vàng cho ngày vui hôm nay!`,
