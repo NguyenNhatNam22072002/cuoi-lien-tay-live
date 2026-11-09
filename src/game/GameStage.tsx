@@ -234,13 +234,6 @@ export function GameStage({ game }: { game: GameState }) {
           </div>
           <div className="rw-price-row">
             <div className="rw-price-item-left">
-              <span className="rw-price-item-icon">🎵</span>
-              <span className="rw-price-item-name">Đổi Nhạc</span>
-            </div>
-            <span className="rw-price-tag">10 xu</span>
-          </div>
-          <div className="rw-price-row">
-            <div className="rw-price-item-left">
               <span className="rw-price-item-icon">🌹</span>
               <span className="rw-price-item-name">Mừng Chỉ Vàng</span>
             </div>
@@ -403,15 +396,15 @@ export function GameStage({ game }: { game: GameState }) {
             <span className="rw-btn-label">Góp Vui Nhảy</span>
             <span className="rw-btn-cost">20 xu</span>
           </button>
-          <button className="rw-challenge-btn rw-btn-amber" onClick={() => game.triggerChallenge('dance', undefined, 10)}>
-            <span className="rw-btn-icon">🎵</span>
-            <span className="rw-btn-label">Đổi Nhạc</span>
-            <span className="rw-btn-cost">10 xu</span>
-          </button>
           <button className="rw-challenge-btn rw-btn-pink" onClick={() => game.triggerChallenge('gold', undefined, 1)}>
             <span className="rw-btn-icon">🌹</span>
             <span className="rw-btn-label">Mừng 1 Chỉ</span>
             <span className="rw-btn-cost">1 xu</span>
+          </button>
+          <button className="rw-challenge-btn rw-btn-amber" onClick={() => game.triggerChallenge('kiss')}>
+            <span className="rw-btn-icon">💋</span>
+            <span className="rw-btn-label">Hôn Đi Nào</span>
+            <span className="rw-btn-cost">Miễn phí</span>
           </button>
         </div>
 

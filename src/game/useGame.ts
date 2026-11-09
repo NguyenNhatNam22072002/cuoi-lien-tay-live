@@ -226,6 +226,83 @@ export function useGame() {
     return () => clearTimeout(t);
   }, [dongPhong]);
 
+  // ---------- CHẾ ĐỘ TREO MÁY TỰ ĐỘNG HOÀN TOÀN (AFK AUTOPILOT) ----------
+  // Chủ kênh chỉ cần mở file BAT rồi đi làm việc khác: Game tự động hoàn toàn!
+  useEffect(() => {
+    let step = 0;
+    const autoTimer = setInterval(() => {
+      step++;
+
+      // 1. Mỗi 2-3 giây: Khách trong sảnh tự động comment nổi bong bóng chat
+      if (step % 2 === 0) {
+        const chats = [
+          'Chúc mừng hai bạn! 🎉',
+          'Đẹp đôi quá trời',
+          'Dzô dzô dzô 🍻',
+          'Hôn đi hôn đi 💋',
+          'Cô dâu xinh xắn ghê',
+          'Chú rể bảnh trai quá',
+          'Cưới liền tay nào',
+          'Vui quá bà con ơi',
+          'Hai họ đẹp lòng ghê',
+          'Trăm năm hạnh phúc nha',
+        ];
+        const randomGuest = realGuests[Math.floor(Math.random() * realGuests.length)];
+        const comment = chats[Math.floor(Math.random() * chats.length)];
+        setRealGuests((prev) => addGuestBubble(prev, randomGuest.id, randomGuest.name, comment));
+      }
+
+      // 2. Tự động mai mối & tổ chức đám cưới khi sân khấu đang trống
+      if (!groom && !bride && !dongPhong && !mcMarriedTo) {
+        if (step % 12 === 0) {
+          const mList = realGuests.filter((x) => x.sprite.startsWith('guest_m'));
+          const fList = realGuests.filter((x) => x.sprite.startsWith('guest_f'));
+          const g = mList[Math.floor(Math.random() * mList.length)] || realGuests[0];
+          const b = fList[Math.floor(Math.random() * fList.length)] || realGuests[1];
+
+          setGroom({ id: g.id, name: g.name, avatar: g.avatar });
+          setBride({ id: b.id, name: b.name, avatar: b.avatar });
+          showNotice('🎉 ĐÁM CƯỚI TỰ ĐỘNG BẮT ĐẦU!', `${g.name} & ${b.name} bước lên lễ đường!`, '💍', 8000);
+          voice.say(`M: Kính thưa quan viên hai họ! | Chào mừng chú rể ${g.name} và cô dâu ${b.name} bước lên sân khấu!`, false);
+
+          // Sau 9 giây: Chú rể bế cô dâu hôn nhau (khoảnh khắc ngọt ngào)
+          setTimeout(() => {
+            setIsKissing(true);
+            setTimeout(() => setIsKissing(false), 14000);
+          }, 9000);
+
+          // Sau 42 giây: Tự động kết thúc đám cũ để đón đám mới (nếu chưa có người thật donate)
+          setTimeout(() => {
+            setGroom((cur) => (cur?.id === g.id ? null : cur));
+            setBride((cur) => (cur?.id === b.id ? null : cur));
+          }, 42000);
+        }
+      }
+
+      // 3. Mỗi 45 giây: Tự động có khách mừng cưới hoặc góp vui nhảy
+      if (step % 30 === 0 && !dongPhong) {
+        const g = realGuests[Math.floor(Math.random() * realGuests.length)];
+        const r = Math.random();
+        if (r < 0.45) {
+          // Góp vui nhảy (20 xu)
+          setIsDancing(true);
+          setTimeout(() => setIsDancing(false), 14000);
+          showNotice('💃 QUẨY CẢ SẢNH!', `${g.name} vừa mở sàn quẩy!`, '🍩', 5000);
+          voice.say(`M: Cả sảnh cùng quẩy lên nào bà con ơi! | Cảm ơn ${g.name} đã mở sàn nhảy!`, false);
+        } else {
+          // Mừng 1 chỉ vàng
+          const prev = s.giftTotal.get(g.id);
+          s.giftTotal.set(g.id, { name: g.name, coins: (prev?.coins ?? 0) + 1 });
+          saveTop(s.giftTotal);
+          setTop(topRows(s.giftTotal));
+          showNotice('🌹 MỪNG 1 CHỈ VÀNG!', `${g.name} vừa mừng 1 chỉ vàng!`, '🥇', 4000);
+        }
+      }
+    }, 1500);
+
+    return () => clearInterval(autoTimer);
+  }, [!groom, !bride, !dongPhong, !mcMarriedTo, realGuests]);
+
   const [s] = useState(() => ({
     greeter: new NameBatcher(
       GAME.greetEveryMs,

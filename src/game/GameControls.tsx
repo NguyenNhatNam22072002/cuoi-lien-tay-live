@@ -118,9 +118,6 @@ export function GameControls({ stageCount = 0 }: { stageCount?: number }) {
         <B onClick={() => gift(anyone(), 20, 'Bánh Donut')}>
           🍩 Góp Vui Nhảy (20 xu)
         </B>
-        <B onClick={() => gift(anyone(), 10, 'Nốt Nhạc')}>
-          🎵 Đổi Nhạc (10 xu)
-        </B>
         <B onClick={() => gift(anyone(), 1, 'Hoa hồng')}>
           🌹 Mừng 1 Chỉ (1 xu)
         </B>
