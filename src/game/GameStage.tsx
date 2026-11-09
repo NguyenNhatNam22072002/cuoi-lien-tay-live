@@ -186,6 +186,69 @@ export function GameStage({ game }: { game: GameState }) {
         </div>
       </div>
 
+      {/* 4.2 BẢNG GIÁ THỬ THÁCH DONATE (CỘT PHẢI - GIỐNG ẢNH 4) */}
+      <div className="rw-price-card">
+        <div className="rw-price-header">🎁 BẢNG GIÁ THỬ THÁCH</div>
+        <div className="rw-price-list">
+          <div className="rw-price-row">
+            <div className="rw-price-item-left">
+              <span className="rw-price-item-icon">🍀</span>
+              <span className="rw-price-item-name">Làm Cô Dâu</span>
+            </div>
+            <span className="rw-price-tag">100 xu</span>
+          </div>
+          <div className="rw-price-row">
+            <div className="rw-price-item-left">
+              <span className="rw-price-item-icon">🐷</span>
+              <span className="rw-price-item-name">Làm Chú Rể</span>
+            </div>
+            <span className="rw-price-tag">100 xu</span>
+          </div>
+          <div className="rw-price-row special-mc">
+            <div className="rw-price-item-left">
+              <span className="rw-price-item-icon">🎤</span>
+              <span className="rw-price-item-name">Cưới Luôn MC</span>
+            </div>
+            <span className="rw-price-tag" style={{ background: '#c084fc', color: '#1e053a' }}>200 xu</span>
+          </div>
+          <div className="rw-price-row special-dp">
+            <div className="rw-price-item-left">
+              <span className="rw-price-item-icon">🏠</span>
+              <span className="rw-price-item-name">Vào Động Phòng</span>
+            </div>
+            <span className="rw-price-tag" style={{ background: '#fb7185', color: '#3f0413' }}>500 xu</span>
+          </div>
+          <div className="rw-price-row">
+            <div className="rw-price-item-left">
+              <span className="rw-price-item-icon">🕊️</span>
+              <span className="rw-price-item-name">Hủy Hôn</span>
+            </div>
+            <span className="rw-price-tag">100 xu</span>
+          </div>
+          <div className="rw-price-row">
+            <div className="rw-price-item-left">
+              <span className="rw-price-item-icon">🍩</span>
+              <span className="rw-price-item-name">Góp Vui Nhảy</span>
+            </div>
+            <span className="rw-price-tag">30 xu</span>
+          </div>
+          <div className="rw-price-row">
+            <div className="rw-price-item-left">
+              <span className="rw-price-item-icon">🎵</span>
+              <span className="rw-price-item-name">Đổi Nhạc</span>
+            </div>
+            <span className="rw-price-tag">10 xu</span>
+          </div>
+          <div className="rw-price-row">
+            <div className="rw-price-item-left">
+              <span className="rw-price-item-icon">🌹</span>
+              <span className="rw-price-item-name">Mừng Chỉ Vàng</span>
+            </div>
+            <span className="rw-price-tag">1 xu</span>
+          </div>
+        </div>
+      </div>
+
       {/* 5. MC SÂN KHẤU (BÊN TRÁI BỤC) */}
       <div className="rw-mc-wrap">
         <div className={`rw-mc-tag ${game.mcMarriedTo ? 'rw-mc-tag-married' : ''}`}>

@@ -242,6 +242,84 @@
   white-space: nowrap;
 }
 
+/* ================== BẢNG GIÁ THỬ THÁCH DONATE (CỘT PHẢI - GIỐNG ẢNH 4) ================== */
+.rw-price-card {
+  position: absolute;
+  top: 360px;
+  right: 30px;
+  width: 310px;
+  background: linear-gradient(145deg, rgba(30, 8, 38, 0.94), rgba(16, 4, 22, 0.96));
+  border: 2px solid #e2a853;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), inset 0 0 12px rgba(226, 168, 83, 0.2);
+  padding: 10px 14px;
+  color: #fff;
+  z-index: 21;
+}
+
+.rw-price-header {
+  font-size: 17px;
+  font-weight: 900;
+  color: #ffd700;
+  text-align: center;
+  border-bottom: 1.5px solid rgba(226, 168, 83, 0.4);
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.rw-price-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.rw-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.rw-price-row.special-mc {
+  background: linear-gradient(90deg, rgba(147, 51, 234, 0.35), rgba(88, 28, 135, 0.45));
+  border: 1px solid rgba(216, 180, 254, 0.4);
+}
+
+.rw-price-row.special-dp {
+  background: linear-gradient(90deg, rgba(225, 29, 72, 0.35), rgba(159, 18, 57, 0.45));
+  border: 1px solid rgba(254, 205, 211, 0.4);
+}
+
+.rw-price-item-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rw-price-item-icon {
+  font-size: 17px;
+}
+
+.rw-price-item-name {
+  color: #ffffff;
+}
+
+.rw-price-tag {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #000;
+  font-weight: 900;
+  font-size: 13px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
 /* ================== MC SÂN KHẤU ================== */
 .rw-mc-wrap {
   position: absolute;
