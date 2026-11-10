@@ -399,7 +399,7 @@ export function GameStage({ game }: { game: GameState }) {
                 <div className="rw-stage-person rw-groom-side is-empty">
                   <div className="rw-spot-avatar-placeholder">🐷</div>
                   <div className="rw-vip-badge is-placeholder">🐷 CHÚ RỂ (10 XU)</div>
-                  <div className="rw-name-badge is-placeholder">Tặng Chú Heo lên Rể</div>
+                  <div className="rw-name-badge is-placeholder">Tặng Chú Heo</div>
                   <img src="/assets/wedding/characters/groom.png" className="rw-groom-img is-silhouette" alt="Chờ chú rể" />
                 </div>
               )}
@@ -432,7 +432,7 @@ export function GameStage({ game }: { game: GameState }) {
                 <div className="rw-stage-person rw-bride-side is-empty">
                   <div className="rw-spot-avatar-placeholder">🍀</div>
                   <div className="rw-vip-badge is-placeholder">🍀 CÔ DÂU (10 XU)</div>
-                  <div className="rw-name-badge is-placeholder">Tặng Cỏ 4 Lá lên Dâu</div>
+                  <div className="rw-name-badge is-placeholder">Tặng Cỏ 4 Lá</div>
                   <img src="/assets/wedding/characters/bride.png" className="rw-bride-img is-silhouette" alt="Chờ cô dâu" />
                 </div>
               )}

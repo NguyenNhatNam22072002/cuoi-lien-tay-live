@@ -77,7 +77,7 @@ export interface RealGuest {
   avatar?: string;
   sprite: string;
   x: number; // 0 - 1080
-  y: number; // 920 - 1520
+  y: number; // 1110 - 1598 (quây quanh & phía dưới bục sân khấu, không leo lên che Cô Dâu/Chú Rể)
   scale: number;
   bubble: { text: string; until: number } | null;
   isDancing?: boolean;
@@ -152,107 +152,100 @@ export const GUEST_SPRITES_M = ['guest_m1', 'guest_m2', 'guest_m3', 'guest_m4', 
 export const GUEST_SPRITES_F = ['guest_f1', 'guest_f2', 'guest_f3', 'guest_f4', 'guest_f5', 'guest_f6', 'guest_f7', 'guest_f8'];
 export const ALL_SPRITES = [...GUEST_SPRITES_M, ...GUEST_SPRITES_F];
 
-/** Tạo mạng lưới vị trí đứng chuẩn phối cảnh khắp sảnh tiệc chứa hơn 500 khách */
+/** Tạo mạng lưới vị trí đứng tự nhiên kiểu phân tán ngẫu nhiên (từ giữa lan ra 2 dãy ghế, không xếp hàng thẳng tắp) */
 function generateGuestPositions(): Array<{ x: number; y: number; scale: number }> {
   const positions: Array<{ x: number; y: number; scale: number }> = [];
 
-  // 1. VIP Carpet & Stairs Aisle (28 vị trí vàng hand-tuned trên thảm đỏ & bậc thang, tăng kích cỡ scale 0.72 - 1.20)
-  const vipSlots = [
-    // Hàng 1 (Ngay chân bậc thang sân khấu) - scale 0.72 - 0.74
-    { x: 320, y: 1060, scale: 0.74 },
-    { x: 430, y: 1050, scale: 0.72 },
-    { x: 540, y: 1045, scale: 0.72 },
-    { x: 650, y: 1050, scale: 0.72 },
-    { x: 760, y: 1060, scale: 0.74 },
+  // PRNG cố định theo seed để vị trí đứng tự nhiên, lộn xộn có trật tự và ổn định qua các lần load
+  let seed = 20261110;
+  const rand = () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 
-    // Hàng 2 (Bậc thang số 2) - scale 0.82 - 0.84
-    { x: 250, y: 1160, scale: 0.82 },
-    { x: 360, y: 1175, scale: 0.84 },
-    { x: 480, y: 1165, scale: 0.82 },
-    { x: 600, y: 1165, scale: 0.82 },
-    { x: 720, y: 1175, scale: 0.84 },
-    { x: 830, y: 1160, scale: 0.82 },
+  const minSafeYAt = (x: number) => (x > 335 && x < 745 ? 1148 : 1112);
+  const scaleAt = (y: number) => {
+    const t = Math.max(0, Math.min(1, (y - 1112) / (1595 - 1112)));
+    return Number((0.55 + t * 0.37).toFixed(2));
+  };
 
-    // Hàng 3 (Bậc thang số 3) - scale 0.94 - 0.96
-    { x: 190, y: 1280, scale: 0.94 },
-    { x: 320, y: 1295, scale: 0.96 },
-    { x: 450, y: 1275, scale: 0.94 },
-    { x: 540, y: 1290, scale: 0.95 },
-    { x: 630, y: 1275, scale: 0.94 },
-    { x: 750, y: 1295, scale: 0.96 },
-    { x: 880, y: 1280, scale: 0.94 },
+  const canPlace = (x: number, y: number, sc: number, sepX: number, sepY: number) => {
+    for (let i = 0; i < positions.length; i++) {
+      const p = positions[i];
+      const avgS = (sc + p.scale) * 0.5;
+      const dx = (x - p.x) / (sepX * avgS);
+      const dy = (y - p.y) / (sepY * avgS);
+      if (dx * dx + dy * dy < 1) return false;
+    }
+    return true;
+  };
 
-    // Hàng 4 (Thảm đỏ chính diện) - scale 1.05 - 1.08
-    { x: 150, y: 1400, scale: 1.05 },
-    { x: 280, y: 1415, scale: 1.08 },
-    { x: 410, y: 1395, scale: 1.05 },
-    { x: 540, y: 1405, scale: 1.06 },
-    { x: 670, y: 1395, scale: 1.05 },
-    { x: 800, y: 1415, scale: 1.08 },
-    { x: 920, y: 1400, scale: 1.05 },
-
-    // Hàng 5 (Tiền cảnh gần camera thảm đỏ) - scale 1.18 - 1.20
-    { x: 220, y: 1520, scale: 1.18 },
-    { x: 540, y: 1535, scale: 1.20 },
-    { x: 850, y: 1520, scale: 1.18 },
+  // 1. 6 vị trí đầu tiên: tập trung ở khu vực giữa thảm đỏ (hơi so le tự nhiên chứ không đóng khung thẳng hàng)
+  const initialCenterSlots: Array<{ x: number; y: number }> = [
+    { x: 438, y: 1468 },
+    { x: 644, y: 1496 },
+    { x: 548, y: 1326 },
+    { x: 412, y: 1218 },
+    { x: 668, y: 1236 },
+    { x: 526, y: 1572 },
   ];
-
-  for (const s of vipSlots) {
-    positions.push(s);
+  for (const s of initialCenterSlots) {
+    positions.push({ x: s.x, y: s.y, scale: scaleAt(s.y) });
   }
 
-  // 2. Mạng lưới phân bổ đồng đều khắp sảnh tiệc (24 hàng, phủ kín lối đi giữa & các bàn tiệc hai bên)
-  // Đảm bảo sảnh chứa hơn 500 người (> 580 vị trí độc lập)
-  const rows = 24;
-  const used = new Set(positions.map((p) => `${Math.round(p.x / 16)}_${Math.round(p.y / 16)}`));
-
-  const aisleSlots: Array<{ x: number; y: number; scale: number }> = [];
-  const tableSlots: Array<{ x: number; y: number; scale: number }> = [];
-
-  for (let r = 0; r < rows; r++) {
-    const t = r / (rows - 1);
-    const y = Math.round(1040 + t * 790);
-    const scale = Number((0.72 + t * 0.48).toFixed(2));
-
-    // Độ rộng thảm đỏ mở rộng dần theo chiều sâu phối cảnh
-    const carpetHalf = Math.round(180 + t * 160);
-    const carpetLeft = 540 - carpetHalf;
-    const carpetRight = 540 + carpetHalf;
-
-    const cols = 24;
-    for (let c = 0; c < cols; c++) {
-      const stagger = r % 2 === 1 ? 20 : 0;
-      const x = Math.round(75 + (c / (cols - 1)) * 930 + stagger + Math.sin(r * 11 + c * 7) * 6);
-      if (x < 65 || x > 1015) continue;
-
-      const key = `${Math.round(x / 16)}_${Math.round(y / 16)}`;
-      if (used.has(key)) continue;
-      used.add(key);
-
-      if (x >= carpetLeft && x <= carpetRight) {
-        aisleSlots.push({ x, y, scale });
-      } else {
-        tableSlots.push({ x, y, scale });
-      }
+  // 2. Mở rộng dần từ giữa ra ngoài qua 4 đợt mật độ (tránh xếp hàng dọc/ngang cứng nhắc)
+  // Đợt 1: 30 người tiếp theo đứng thưa thoáng, từ tâm lan dần sang cả khu vực ghế hai bên
+  for (let attempt = 0; attempt < 2400 && positions.length < 36; attempt++) {
+    const progress = (positions.length - 6) / 30;
+    const maxSpread = 220 + progress * 246; // lan từ +-220px ra tới toàn chiều ngang [74..1006]
+    // Nghiêng xác suất nhẹ từ giữa ra ngoài để khách luôn mọc tự nhiên từ lối đi ra ghế
+    const u = (rand() - rand()) * 0.5 + 0.5; // phân bố tam giác quanh tâm (0..1, đỉnh ở 0.5)
+    const dir = rand() < 0.5 ? -1 : 1;
+    const x = Math.max(74, Math.min(1006, Math.round(540 + dir * Math.pow(u, 0.72) * maxSpread)));
+    const minY = minSafeYAt(x);
+    const y = Math.round(minY + rand() * (1594 - minY));
+    const sc = scaleAt(y);
+    if (canPlace(x, y, sc, 118, 96)) {
+      positions.push({ x, y, scale: sc });
     }
   }
 
-  // Ưu tiên nạp khách vào thảm đỏ trước, rồi mới lan tỏa ra các bàn tiệc hai bên
-  positions.push(...aisleSlots);
-  positions.push(...tableSlots);
+  // Đợt 2..4: lấp đầy dần từ trong ra ngoài đến > 600 chỗ bằng Poisson ngẫu nhiên không tạo hàng lối
+  const waves: Array<{ target: number; tries: number; sepX: number; sepY: number }> = [
+    { target: 96, tries: 4500, sepX: 82, sepY: 66 },
+    { target: 220, tries: 7000, sepX: 52, sepY: 42 },
+    { target: 680, tries: 16000, sepX: 25, sepY: 22 },
+  ];
+
+  for (const wave of waves) {
+    for (let attempt = 0; attempt < wave.tries && positions.length < wave.target; attempt++) {
+      // Ưu tiên điểm gần tâm trước rồi lan ngẫu nhiên toàn bộ [74..1006]
+      const bias = Math.pow(rand(), 0.8);
+      const dir = rand() < 0.5 ? -1 : 1;
+      const x = Math.max(74, Math.min(1006, Math.round(540 + dir * bias * 466)));
+      const minY = minSafeYAt(x);
+      const y = Math.round(minY + rand() * (1594 - minY));
+      const sc = scaleAt(y);
+      if (canPlace(x, y, sc, wave.sepX, wave.sepY)) {
+        positions.push({ x, y, scale: sc });
+      }
+    }
+  }
 
   return positions;
 }
 
 export const GUEST_POSITIONS: Array<{ x: number; y: number; scale: number }> = generateGuestPositions();
 
-/** 5 user ảo ban đầu khi vừa mở live (để người xem không thấy cô đơn) */
+/** 5 user ảo ban đầu khi vừa mở live: đứng tập trung cân đối ngay chính giữa thảm đỏ */
 const INITIAL_FAKE_GUESTS = [
-  { name: 'Minh Vũ', sprite: 'guest_m1', posIdx: 6 },
-  { name: 'Bé Linh 🌸', sprite: 'guest_f1', posIdx: 8 },
-  { name: 'Hoàng Trọng', sprite: 'guest_m2', posIdx: 13 },
-  { name: 'Ái Phi ✨', sprite: 'guest_f4', posIdx: 16 },
-  { name: 'Khánh Linh 💕', sprite: 'guest_f2', posIdx: 21 },
+  { name: 'Minh Vũ', sprite: 'guest_m1', posIdx: 0 },
+  { name: 'Bé Linh 🌸', sprite: 'guest_f1', posIdx: 1 },
+  { name: 'Hoàng Trọng', sprite: 'guest_m2', posIdx: 2 },
+  { name: 'Ái Phi ✨', sprite: 'guest_f4', posIdx: 3 },
+  { name: 'Khánh Linh 💕', sprite: 'guest_f2', posIdx: 4 },
 ];
 
 /** Khởi tạo chỉ khoảng 4-5 user giả đứng dưới sân khấu */

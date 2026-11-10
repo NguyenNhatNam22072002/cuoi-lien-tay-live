@@ -950,24 +950,24 @@
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* Thẻ tên trên đầu khách (Dark Blue Rounded Pill) - NÉT CĂNG, TĂNG KÍCH THƯỚC, KHÔNG BỊ MỜ */
+/* Thẻ tên trên đầu khách (Dark Blue Rounded Pill) - NÉT CĂNG, GỌN GÀNG TRÁNH ĐÈ NHAU */
 .rw-guest-tag {
   background: linear-gradient(180deg, #1e3a8a 0%, #0a1738 100%);
   color: #ffffff;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 900;
-  padding: 4px 14px;
-  border-radius: 16px;
+  padding: 3px 11px;
+  border-radius: 14px;
   border: 2px solid #93c5fd;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.85), 0 0 8px rgba(59, 130, 246, 0.6);
   white-space: nowrap;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.95);
-  max-width: 170px;
+  max-width: 148px;
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 
 /* Thân nhân vật và ảnh người thật - SCALE THEO CHIỀU SÂU PHỐI CẢNH */
