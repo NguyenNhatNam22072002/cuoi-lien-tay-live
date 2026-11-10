@@ -44,6 +44,13 @@ const many = (n: number, f: (i: number) => void) => {
 
 export function GameControls({ stageCount = 0 }: { stageCount?: number }) {
   const [auto, setAuto] = useState(false);
+  const [activeTheme, setActiveTheme] = useState(() => {
+    try {
+      return localStorage.getItem('wedding-theme') || 'red';
+    } catch {
+      return 'red';
+    }
+  });
   const [musicOn, setMusicOn] = useState(true);
   const [musicVol, setMusicVol] = useState(() => {
     try {
@@ -52,6 +59,14 @@ export function GameControls({ stageCount = 0 }: { stageCount?: number }) {
       return 100;
     }
   });
+
+  const selectTheme = (t: string) => {
+    setActiveTheme(t);
+    try {
+      localStorage.setItem('wedding-theme', t);
+    } catch {}
+    void sendControl('custom', `theme:${t}`);
+  };
 
   const changeVol = (v: number) => {
     setMusicVol(v);
@@ -68,19 +83,23 @@ export function GameControls({ stageCount = 0 }: { stageCount?: number }) {
       const w = anyone();
       const r = Math.random();
 
-      if (r < 0.08) {
-        // Cưới MC (50 xu)
-        gift(w, 50, 'Trái tim / Cưới MC');
-      } else if (r < 0.16) {
-        // Làm Chú rể hoặc Cô dâu (50 xu)
-        if (Math.random() < 0.5) gift(w, 50, 'Chú Heo May Mắn');
-        else gift(w, 50, 'Cỏ Bốn Lá');
+      if (r < 0.05) {
+        // Cưới MC (99 xu)
+        gift(w, 99, 'Bắn Tim / Cưới MC');
+      } else if (r < 0.12) {
+        // Làm Chú rể hoặc Cô dâu (10 xu)
+        if (Math.random() < 0.5) gift(w, 10, 'Chú Heo May Mắn');
+        else gift(w, 10, 'Cỏ Bốn Lá');
+      } else if (r < 0.18) {
+        // Góp vui nhảy (30 xu)
+        gift(w, 30, 'Quả Đào');
       } else if (r < 0.28) {
         // Mừng hoa hồng (1 xu)
         gift(w, 1, 'Hoa hồng');
       } else if (r < 0.40) {
-        // Giục hôn hoặc dzô
-        chat(w, Math.random() < 0.5 ? 'hôn đi' : 'dzô');
+        // Giục hôn, nhảy hoặc dzô
+        const act = Math.random();
+        chat(w, act < 0.33 ? 'hôn đi' : act < 0.66 ? 'dzô' : 'nhảy');
       } else {
         // Comment thường hiện bong bóng trên đầu khách
         chat(w, CHATS[Math.floor(Math.random() * CHATS.length)]);
@@ -106,11 +125,23 @@ export function GameControls({ stageCount = 0 }: { stageCount?: number }) {
         <B onClick={() => gift(anyone(), 10, 'Chú Heo May Mắn')}>
           🐷 Làm Chú Rể (10 xu)
         </B>
+        <B onClick={() => gift(anyone(), 20, 'Kính Râm / Thay Cô Dâu')}>
+          👰 Thay Cô Dâu (20 xu)
+        </B>
+        <B onClick={() => gift(anyone(), 20, 'Kính Râm / Thay Chú Rể')}>
+          👑 Thay Chú Rể (20 xu)
+        </B>
+        <B onClick={() => gift(anyone(), 50, 'Máy Ảnh / Chụp Poster')}>
+          📷 Chụp Poster Cưới (50 xu)
+        </B>
         <B onClick={() => gift(anyone(), 99, 'Bắn Tim / Cưới MC')}>
           🎤 Cưới MC (99 xu)
         </B>
         <B onClick={() => gift(anyone(), 150, 'Động Phòng Hoa Chúc')}>
           🏰 Vào Động Phòng (150 xu)
+        </B>
+        <B onClick={() => gift(anyone(), 1000, 'Tên Lửa / End Live')}>
+          🚀 End Live (1000 xu)
         </B>
         <B onClick={() => gift(anyone(), 30, 'Quả Đào')}>
           🍑 Góp Vui Nhảy (30 xu)
@@ -128,16 +159,16 @@ export function GameControls({ stageCount = 0 }: { stageCount?: number }) {
 
       {/* 2. CHUYỂN THEME SÂN KHẤU TIỆC CƯỚI */}
       <Row label="Theme Sân Khấu">
-        <B onClick={() => void sendControl('custom', 'theme:red')}>
+        <B onClick={() => selectTheme('red')} on={activeTheme === 'red'}>
           🔴 Đỏ Vàng Hoàng Gia
         </B>
-        <B onClick={() => void sendControl('custom', 'theme:navy')}>
+        <B onClick={() => selectTheme('navy')} on={activeTheme === 'navy'}>
           🔵 Xanh Đêm Hoàng Gia
         </B>
-        <B onClick={() => void sendControl('custom', 'theme:gold')}>
+        <B onClick={() => selectTheme('gold')} on={activeTheme === 'gold'}>
           🟡 Thu Vàng Kim
         </B>
-        <B onClick={() => void sendControl('custom', 'theme:pink')}>
+        <B onClick={() => selectTheme('pink')} on={activeTheme === 'pink'}>
           🌸 Hồng Hoa Anh Đào
         </B>
       </Row>

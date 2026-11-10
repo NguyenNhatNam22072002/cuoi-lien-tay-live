@@ -31,6 +31,15 @@ export function Dashboard({
   const [msg, setMsg] = useState('');
   const [speakText, setSpeakText] = useState('');
   const [busy, setBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const port = window.location.port || '3005';
+  const studioUrl = `http://lvh.me:${port}/?view=stage`;
+  const copyStudioUrl = () => {
+    navigator.clipboard.writeText(studioUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
 
   const connect = async () => {
     setBusy(true);
@@ -72,7 +81,7 @@ export function Dashboard({
             <div className="flex gap-2">
               <input
                 className="min-w-0 flex-1 rounded-lg bg-slate-800 px-3 py-1.5"
-                placeholder="username TikTok (không cần @)"
+                placeholder="Nhập username TikTok (ví dụ @kenhcua ban hoặc dán link live)"
                 value={user}
                 onChange={(e) => setUser(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && user.trim() && connect()}
@@ -86,20 +95,42 @@ export function Dashboard({
             </div>
             <div className="mt-2 flex flex-wrap gap-x-3 text-xs">
               {status?.isConnected ? (
-                <span className="text-emerald-400">
+                <span className="text-emerald-400 font-medium">
                   ● Đang live @{status.username} · {status.viewerCount} người xem · {status.totalLikes} tim
                 </span>
               ) : status?.isConnecting ? (
-                <span className="text-amber-400">● Đang kết nối...</span>
+                <span className="text-amber-400 font-medium">● Đang kết nối tới TikTok...</span>
               ) : (
-                <span className="text-slate-400">● Chưa kết nối</span>
+                <span className="text-slate-400 font-medium">● Chưa kết nối phòng live</span>
               )}
-              <span className="text-slate-500">
-                {/* đúng cổng game đang chạy (mặc định 3005, bận thì tự đổi) */}
-                LIVE Studio: <b className="text-slate-300 select-all">{`http://lvh.me:${window.location.port || '80'}/?view=stage`}</b> · 1080×1920
-              </span>
             </div>
-            {(msg || status?.error) && <div className="mt-1 text-xs text-amber-300">{msg || status?.error}</div>}
+            {(msg || status?.error) && <div className="mt-1 text-xs text-amber-300 font-medium">{msg || status?.error}</div>}
+
+            {/* Khung cấu hình link chuẩn cho TikTok LIVE Studio */}
+            <div className="mt-3 rounded-xl bg-slate-950/70 p-2.5 ring-1 ring-slate-800/80">
+              <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+                <span className="font-semibold text-amber-400">📺 Link cho TikTok LIVE Studio (Nguồn liên kết / Link):</span>
+                <span className="text-[11px] text-slate-500">Kích thước: <b>1080 × 1920</b></span>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  readOnly
+                  className="min-w-0 flex-1 rounded-lg bg-slate-900 px-2.5 py-1 text-xs font-mono text-emerald-400 ring-1 ring-slate-700 select-all"
+                  value={studioUrl}
+                />
+                <button
+                  onClick={copyStudioUrl}
+                  className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
+                    copied ? 'bg-emerald-600 text-white' : 'bg-amber-600 hover:bg-amber-500 text-white'
+                  }`}
+                >
+                  {copied ? '✓ Đã chép!' : '📋 Sao chép link'}
+                </button>
+              </div>
+              <div className="mt-1.5 text-[11px] text-slate-400">
+                👉 Trong TikTok LIVE Studio: Nhấn <b>Thêm nguồn</b> → chọn <b>Liên kết (Link)</b> → dán link <b>lvh.me</b> ở trên (được TikTok LIVE Studio chấp nhận 100%, không bị lỗi &quot;Enter incorrect url&quot; như 127.0.0.1/localhost).
+              </div>
+            </div>
           </Card>
 
           <Card title="Giọng đọc trên stage">

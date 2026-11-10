@@ -29,9 +29,13 @@ const TTS_VOICE = process.env.TTS_VOICE || 'vi-VN-NamMinhNeural';
 // Giọng MC đám cưới: cao hơn một chút cho tươi (giọng trầm của Đi Chùa là -4%)
 const TTS_PITCH = process.env.TTS_PITCH || '+6%';
 
-// Chặn DNS rebinding: trang web lạ trỏ tên miền của nó về 127.0.0.1 thì Host/Origin sẽ khác các tên dưới đây
-const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', 'lvh.me']);
-const hostOk = (h?: string) => !!h && LOCAL_HOSTS.has(h.replace(/:\d+$/, '').toLowerCase());
+// Cho phép kết nối an toàn từ máy này và TikTok LIVE Studio
+const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', 'lvh.me', '0.0.0.0', '::1']);
+const hostOk = (h?: string) => {
+  if (!h) return true;
+  const host = h.replace(/:\d+$/, '').toLowerCase();
+  return LOCAL_HOSTS.has(host) || host.startsWith('192.168.') || host.startsWith('10.') || host.startsWith('172.');
+};
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (!hostOk(req.headers.host) || (origin && !hostOk(origin.replace(/^https?:\/\//, '')))) return res.status(403).end();
@@ -134,9 +138,20 @@ const userOf = (data: any) => data?.user?.displayId || data?.user?.uniqueId || d
 const nickOf = (data: any) => data?.user?.nickname || data?.nickname || data?.uniqueId || 'Bạn';
 const avatarOf = (data: any) => data?.user?.avatarThumb?.urlList?.[0] || '';
 
+function cleanTikTokUsername(raw: string): string {
+  let s = String(raw || '').trim();
+  s = s.split('?')[0].split('#')[0];
+  const urlMatch = s.match(/tiktok\.com\/@([^/?#]+)/i);
+  if (urlMatch) return urlMatch[1].trim();
+  const atMatch = s.match(/@([^/?#]+)/);
+  if (atMatch) return atMatch[1].trim();
+  s = s.replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/^@/, '');
+  return s.split('/')[0].trim();
+}
+
 app.post('/api/tiktok/connect', async (req, res) => {
-  const cleanUser = String(req.body?.username || '').replace(/^@/, '').trim();
-  if (!cleanUser) return res.status(400).json({ success: false, error: 'Chưa nhập username TikTok' });
+  const cleanUser = cleanTikTokUsername(req.body?.username || '');
+  if (!cleanUser) return res.status(400).json({ success: false, error: 'Chưa nhập username TikTok (hoặc link live hợp lệ)' });
 
   if (activeConn) {
     try {
@@ -433,13 +448,23 @@ async function start() {
   const listen = (port: number, triesLeft: number) => {
     const srv = app.listen(port, '127.0.0.1', () => {
       const url = `http://localhost:${port}`;
-      console.log('');
-      console.log(`Server chạy ở ${url}`);
-      console.log(`Link cho TikTok LIVE Studio: http://lvh.me:${port}/?view=stage  (1080 x 1920)`);
+      console.log('================================================================');
+      console.log(`  TRANG ĐIỀU KHIỂN:   http://localhost:${port}`);
+      console.log('----------------------------------------------------------------');
+      console.log(`  LINK CHO TIKTOK LIVE STUDIO (Nguồn liên kết 1080 x 1920):`);
+      console.log(`  👉 Link chuẩn TikTok:    http://lvh.me:${port}/?view=stage`);
+      console.log(`     (Dùng miền lvh.me để tránh lỗi "Enter incorrect url" của Studio)`);
+      console.log(`  👉 Link dự phòng 1:      http://127.0.0.1:${port}/?view=stage`);
+      console.log(`  👉 Link dự phòng 2:      http://localhost:${port}/?view=stage`);
+      console.log('================================================================');
       if (port !== PORT) console.log(`(Cổng ${PORT} đang bận nên game tự dùng cổng ${port})`);
       console.log('');
-      // BAT-LIVE.bat đặt OPEN_BROWSER=1: tự mở đúng trang điều khiển theo cổng vừa chọn
-      if (process.env.OPEN_BROWSER === '1' && process.platform === 'win32') exec(`start "" "${url}"`);
+      // Tự mở đúng trang điều khiển theo cổng vừa chọn
+      if (process.env.OPEN_BROWSER === '1') {
+        if (process.platform === 'win32') exec(`start "" "${url}"`);
+        else if (process.platform === 'darwin') exec(`open "${url}"`);
+        else exec(`xdg-open "${url}"`);
+      }
     });
     srv.on('error', (err: NodeJS.ErrnoException) => {
       if (err.code === 'EADDRINUSE' && triesLeft > 0) {

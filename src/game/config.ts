@@ -31,9 +31,9 @@ export const GAME = {
   // ---------- Thử thách quà tặng Donate (Chuẩn TikTok Việt Nam) ----------
   challenges: {
     marryMC: [
-      (n: N) => `M: Ôi trời ơi bà con ơi! | ${n} vừa tặng chín mươi chín xu rước MC về làm vợ luôn rồi! | Em xin phép nhận lời nha! Cảm ơn ${n} nhiều!`,
-      (n: N) => `M: Bất ngờ chưa bà con! | ${n} chi hẳn chín mươi chín xu bắn tim cưới luôn MC! | Từ giây phút này MC chính thức là người của ${n} nha!`,
-      (n: N) => `M: Cứu tôi với bà con ơi! | Đang làm MC dẫn đám cưới thì bị ${n} tặng chín mươi chín xu bắt về dinh luôn! | Thôi thì em xin thuận theo duyên số! Cảm ơn ${n}!`,
+      (n: N) => `M: Ôi trời ơi bà con ơi! | ${n} vừa chi hẳn chín mươi chín xu bắn tim rước MC Mai Trường về dinh rồi! | Từ giây phút này MC xin nguyện nghe lời một mình ${n} thôi nha!`,
+      (n: N) => `M: Cứu tôi với bà con ơi! | Đang dẫn tiệc cưới thì bị đại gia ${n} tặng chín mươi chín xu bắt về làm bạn đời luôn! | Em xin nhận lời và thuộc quyền sở hữu của ${n} nha!`,
+      (n: N) => `M: Vợ chồng son đẹp nhất phiên live hôm nay đây rồi! | Cảm ơn ${n} đã chi chín mươi chín xu cưới đứt MC! | Ai muốn cướp MC thì mau mau nạp chín mươi chín xu nha!`,
     ],
     dongPhong: [
       (n: N, g: N, b: N) => `M: Động phòng hoa chúc! | Cảm ơn đại gia ${n} đã tài trợ một trăm năm mươi xu mở phòng loan cho đôi uyên ương! | Chúc ${g} và ${b} trăm năm hòa hợp, sớm sinh quý tử!`,
@@ -43,9 +43,25 @@ export const GAME = {
       (n: N) => `M: Chú rể mới đã xuất hiện rồi bà con ơi! | Xin nhiệt liệt chúc mừng chú rể ${n} đã tặng Chú Heo mười xu và bước lên lễ đường!`,
       (n: N) => `M: ${n} vừa tặng Chú Heo mười xu để làm chú rể! | Chú rể đứng giữa bục đẹp trai phong độ quá bà con ơi!`,
     ],
+    replaceGroom: [
+      (n: N, o?: N) => `M: Kịch tính quá bà con ơi! | ${n} vừa chi hai mươi xu thay thế chú rể ${o || 'cũ'} và chiếm trọn sân khấu! | ${o || 'Chú rể cũ'} có nạp hai mươi xu để giành lại không nào?!`,
+      (n: N) => `M: Cướp rể chớp nhoáng bà con ơi! | ${n} vừa tung hai mươi xu thay thế chú rể và bước lên làm tân lang!`,
+    ],
     makeBride: [
       (n: N) => `M: Cô dâu xinh đẹp tuyệt trần đã tới! | Chúc mừng cô dâu ${n} vừa tặng Cỏ Bốn Lá mười xu và bước lên sân khấu!`,
       (n: N) => `M: Cả sảnh cùng đón chào cô dâu ${n}! | Tặng Cỏ Bốn Lá mười xu diện bộ váy cưới trắng tinh khôi, đẹp không tì vết luôn bà con!`,
+    ],
+    replaceBride: [
+      (n: N, o?: N) => `M: Cướp dâu nghẹt thở luôn bà con ơi! | ${n} vừa tặng hai mươi xu thay thế cô dâu ${o || 'cũ'}! | Vị trí cô dâu giờ thuộc về ${n}! Ai muốn thay tiếp thì tặng hai mươi xu nha!`,
+      (n: N) => `M: Đổi dâu thành công rồi bà con ơi! | ${n} chi hai mươi xu thay thế cô dâu bước lên lễ đường!`,
+    ],
+    endLive: [
+      (n: N) => `M: Trời đất ơi! Cả sảnh tiệc đứng hình! | Đại gia ${n} vừa tặng một ngàn xu mua đứt toàn bộ phòng live và tuyên bố kết thúc đám cưới hôm nay! | Xin cảm ơn đại gia ${n} đã bao trọn buổi tiệc cưới hoành tráng!`,
+      (n: N) => `M: Đại gia ${n} nổ quà một ngàn xu bao trọn sảnh tiệc! | Buổi tiệc cưới chính thức hạ màn theo lệnh của đại gia ${n}!`,
+    ],
+    takePhoto: [
+      (n: N, g: N, b: N) => `M: Chuẩn bị nào ${g} và ${b} ơi! Một, hai, ba... Tách! | Cảm ơn ${n} đã tài trợ năm mươi xu chụp tấm ảnh cưới kỷ niệm cực đẹp! | Cả nhà mau chụp màn hình lại để đăng story lưu giữ kỷ niệm cho đôi uyên ương nha!`,
+      (n: N, g: N, b: N) => `M: Nhiếp ảnh gia lên đèn! Tách! | Chúc mừng ${g} và ${b} đã có một tấm poster cưới lung linh do bạn ${n} tặng năm mươi xu! | Chụp màn hình ngay để đăng story thôi bà con ơi!`,
     ],
     cancelWedding: [
       (n: N) => `M: Ôi kìa! ${n} vừa tặng Hạc Giấy chín mươi chín xu hủy hôn rồi bà con ơi! | Đám cưới bị hủy rồi, ai muốn cưới thì tặng Chú Heo hoặc Cỏ Bốn Lá mười xu nha!`,

@@ -16,10 +16,16 @@ import {
   type WeddingTheme,
   createDefaultGuests,
   addGuestBubble,
+  addOrUpdateGuest,
+  matchPriceTableGift,
   type RealGuest,
   type RealPerson,
   type DongPhongEvent,
+  type McCelebration,
   type NoticeBanner,
+  type GiftAlert,
+  type EndLiveEvent,
+  type PhotoEvent,
 } from './realWedding';
 
 // Bốc kiểu "rút bài": đọc hết 1 vòng mới lặp lại, để giọng MC không bị nhắc lại câu cũ
@@ -161,42 +167,253 @@ export function useGame() {
   };
   const [groom, setGroom] = useState<RealPerson | null>(null);
   const [bride, setBride] = useState<RealPerson | null>(null);
+  const [groomBubble, setGroomBubble] = useState<{ text: string; until: number } | null>(null);
+  const [brideBubble, setBrideBubble] = useState<{ text: string; until: number } | null>(null);
   const [mcMarriedTo, setMcMarriedTo] = useState<RealPerson | null>(null);
+  const [mcCelebration, setMcCelebration] = useState<McCelebration | null>(null);
+  const [mcPartnerBubble, setMcPartnerBubble] = useState<{ text: string; until: number } | null>(null);
   const [dongPhong, setDongPhong] = useState<DongPhongEvent | null>(null);
+  const [photoPoster, setPhotoPoster] = useState<PhotoEvent | null>(null);
+  const [endLive, setEndLive] = useState<EndLiveEvent | null>(null);
   const [isDancing, setIsDancing] = useState(false);
   const [isKissing, setIsKissing] = useState(false);
   const [notice, setNotice] = useState<NoticeBanner | null>(null);
+  const [giftAlert, setGiftAlert] = useState<GiftAlert | null>(null);
   const [realGuests, setRealGuests] = useState<RealGuest[]>(createDefaultGuests);
 
   const showNotice = (title: string, subtitle?: string, icon?: string, ms = 6000) => {
     setNotice({ title, subtitle, icon, until: Date.now() + ms });
   };
 
+  const closePhotoPoster = () => setPhotoPoster(null);
+
+  /** Đặt lại tiệc cưới mới (Streamer có thể bấm bất kỳ lúc nào hoặc sau khi End Live) */
+  const resetWedding = () => {
+    const oldGroom = groom;
+    const oldBride = bride;
+    setGroom(null);
+    setBride(null);
+    setMcMarriedTo(null);
+    setGroomBubble(null);
+    setBrideBubble(null);
+    setMcPartnerBubble(null);
+    setDongPhong(null);
+    setPhotoPoster(null);
+    setEndLive(null);
+    setIsDancing(false);
+    setIsKissing(false);
+    setRealGuests((prev) => {
+      let list = [...prev];
+      if (oldGroom) list = addOrUpdateGuest(list, oldGroom.id, oldGroom.name, oldGroom.avatar, 'join');
+      if (oldBride) list = addOrUpdateGuest(list, oldBride.id, oldBride.name, oldBride.avatar, 'join');
+      return list;
+    });
+    showNotice('🎉 TIỆC CƯỚI MỚI BẮT ĐẦU!', 'Chào mừng quý khách đến với đám cưới tiếp theo!', '💒', 6000);
+    voice.say('M: Tiệc cưới mới xin phép được bắt đầu! Mời các đại gia tiếp tục tặng Chú Heo và Cỏ Bốn Lá mười xu để lên làm cô dâu chú rể nha!', true);
+  };
+
   const triggerChallenge = (type: string, user?: { id: string; name: string; avatar?: string }, coins = 100) => {
-    const u = user || { id: 'khach_vip', name: 'Đại Gia VIP', avatar: '' };
+    const rawU = user || { id: 'khach_vip', name: 'Đại Gia VIP', avatar: '' };
+    const resolvedUserAvatar =
+      rawU.avatar ||
+      avatars.current.get(rawU.id) ||
+      realGuests.find((g) => g.id === rawU.id)?.avatar ||
+      '';
+    const u = { ...rawU, avatar: resolvedUserAvatar };
+    if (resolvedUserAvatar) avatars.current.set(u.id, resolvedUserAvatar);
+
+    // Cập nhật bảng xếp hạng vàng khi có xu donate
+    if (coins > 0) {
+      const prev = s.giftTotal.get(u.id);
+      s.giftTotal.set(u.id, { name: u.name, coins: (prev?.coins ?? 0) + coins });
+      saveTop(s.giftTotal);
+      setTop(topRows(s.giftTotal));
+    }
+
+    // Hiển thị thông báo quà tặng nổi bật
+    if (coins > 0 && type !== 'kiss') {
+      const giftMap: Record<string, { name: string; icon: string }> = {
+        make_groom: { name: 'Chú Heo (Làm Rể 10 xu)', icon: '🐷' },
+        make_bride: { name: 'Cỏ 4 Lá (Làm Dâu 10 xu)', icon: '🍀' },
+        replace_groom: { name: 'Kính Râm (Thay Rể 20 xu)', icon: '👑' },
+        replace_bride: { name: 'Kính Râm (Thay Dâu 20 xu)', icon: '👰' },
+        take_photo: { name: 'Máy Ảnh (Chụp Poster Cưới 50 xu)', icon: '📷' },
+        marry_mc: { name: 'Bắn Tim (Cưới MC 99 xu)', icon: '🎤' },
+        dong_phong: { name: 'Động Phòng Hoa Chúc (150 xu)', icon: '🏰' },
+        end_live: { name: 'Tên Lửa / Sư Tử (End Live 1000 xu)', icon: '🚀' },
+        dance: { name: 'Quả Đào / Donut (Nhảy 30 xu)', icon: '🍑' },
+        cancel: { name: 'Hạc Giấy (Hủy Hôn 99 xu)', icon: '🕊️' },
+        gold: { name: 'Hoa Hồng (Mừng Vàng 1 xu)', icon: '🌹' },
+      };
+      const info = giftMap[type] || { name: 'Quà Mừng Cưới', icon: '🎁' };
+      setGiftAlert({
+        user: u.name,
+        avatar: u.avatar,
+        giftName: info.name,
+        coins,
+        icon: info.icon,
+        until: Date.now() + 5000,
+      });
+    }
+
     if (type === 'marry_mc') {
+      const oldPartner = mcMarriedTo;
       setMcMarriedTo(u);
-      showNotice('💍 CƯỚI MC THÀNH CÔNG!', `${u.name} vừa tặng Bắn Tim (99 xu) cưới luôn MC!`, '🎤', 8000);
-      voice.say(pick(GAME.challenges.marryMC)!(speakableName(u.name)), true);
+      setMcPartnerBubble(null);
+      setMcCelebration({
+        partnerName: u.name,
+        partnerAvatar: u.avatar,
+        isSteal: !!oldPartner && oldPartner.id !== u.id,
+        oldPartnerName: oldPartner?.name,
+        until: Date.now() + 7000,
+      });
+
+      // Xóa người cưới MC khỏi dàn khách ở dưới; nếu có người cũ bị cướp thì đưa người cũ về dưới dàn khách
+      setRealGuests((prev) => {
+        let list = prev.filter((g) => g.id !== u.id && g.name !== u.name);
+        if (oldPartner && oldPartner.id !== u.id) {
+          list = addOrUpdateGuest(list, oldPartner.id, oldPartner.name, oldPartner.avatar, 'join');
+        }
+        return list;
+      });
+
+      if (oldPartner && oldPartner.id !== u.id) {
+        showNotice('💔 CƯỚP MC NGOẠN MỤC!', `${u.name} vừa chi 99 xu cướp MC khỏi tay ${oldPartner.name}!`, '👑', 8000);
+        voice.say(`M: Kịch tính quá bà con ơi! | Đại gia ${speakableName(u.name)} vừa tặng chín mươi chín xu cướp đứt MC ngay trên tay ${speakableName(oldPartner.name)}! | ${speakableName(oldPartner.name)} ơi có tặng chín mươi chín xu để cướp lại MC không nào?!`, true);
+      } else {
+        showNotice('💍 CƯỚI MC THÀNH CÔNG!', `${u.name} vừa tặng Bắn Tim (99 xu) rước MC về dinh!`, '💖', 8000);
+        voice.say(pick(GAME.challenges.marryMC)!(speakableName(u.name)), true);
+      }
     } else if (type === 'dong_phong') {
       const gName = groom?.name || 'Chú Rể';
       const bName = bride?.name || 'Cô Dâu';
-      setDongPhong({ donor: u.name, donorAvatar: u.avatar, groom: gName, bride: bName, until: Date.now() + 20000 });
+      const gAvatar = groom?.avatar || (groom?.id ? avatars.current.get(groom.id) : '') || '';
+      const bAvatar = bride?.avatar || (bride?.id ? avatars.current.get(bride.id) : '') || '';
+      setDongPhong({
+        donor: u.name,
+        donorAvatar: u.avatar,
+        groom: gName,
+        groomAvatar: gAvatar,
+        bride: bName,
+        brideAvatar: bAvatar,
+        until: Date.now() + 10000,
+      });
       showNotice('🏰 ĐỘNG PHÒNG HOA CHÚC!', `${u.name} tài trợ 150 xu mở phòng loan!`, '💖', 8000);
       voice.say(pick(GAME.challenges.dongPhong)!(speakableName(u.name), gName, bName), true);
-    } else if (type === 'make_groom') {
+    } else if (type === 'take_photo') {
+      const gName = groom?.name || 'Chú Rể';
+      const bName = bride?.name || 'Cô Dâu';
+      const gAvatar = groom?.avatar || (groom?.id ? avatars.current.get(groom.id) : '') || '';
+      const bAvatar = bride?.avatar || (bride?.id ? avatars.current.get(bride.id) : '') || '';
+      const nowDate = new Date();
+      const dateStr = `${String(nowDate.getDate()).padStart(2, '0')}.${String(nowDate.getMonth() + 1).padStart(2, '0')}.${nowDate.getFullYear()}`;
+      const likes = 14800 + Math.floor(Math.random() * 8000) + (s.likeCycle ?? 0);
+      const likerNames = realGuests.slice(0, 3).map((g) => g.name);
+      if (likerNames.length === 0) likerNames.push('Bé Linh 🌸', 'Minh Vũ');
+      const coupleNo = Math.max(28, (s.married || 0) + 28);
+      setPhotoPoster({
+        donor: u.name,
+        donorAvatar: u.avatar,
+        groom: gName,
+        groomAvatar: gAvatar,
+        bride: bName,
+        brideAvatar: bAvatar,
+        dateStr,
+        likes,
+        likerNames,
+        coupleNo,
+        until: Date.now() + 7000,
+      });
+      world.confetti(250);
+      world.roseRain(200);
+      showNotice('📸 CHỤP POSTER KỶ NIỆM (50 XU)!', `${u.name} tài trợ chụp ảnh cho ${gName} & ${bName} — Chụp màn hình ngay!`, '📷', 6500);
+      voice.say(pick(GAME.challenges.takePhoto)!(speakableName(u.name), speakableName(gName), speakableName(bName)), true);
+    } else if (type === 'end_live') {
+      const liveCoins = coins >= 1000 ? coins : 1000;
+      setEndLive({
+        donor: u.name,
+        donorAvatar: u.avatar,
+        coins: liveCoins,
+        until: Date.now() + 25000,
+      });
+      world.fireworks(25);
+      world.fountains(15000);
+      world.roseRain(500);
+      world.balloonsUp(60);
+      world.confetti(500);
+      showNotice('🚀 ĐẠI GIA END LIVE (1.000 XU)!', `${u.name} vừa chi ${liveCoins} xu mua đứt phòng live & bế mạc tiệc cưới!`, '👑', 12000);
+      voice.say(pick(GAME.challenges.endLive)!(speakableName(u.name)), true);
+    } else if (type === 'make_groom' || type === 'replace_groom') {
+      const oldGroom = groom;
+      const isAlreadyOccupied = !!oldGroom && oldGroom.id !== u.id;
+
+      // Nếu đã có chú rể mà chỉ tặng 10 xu qua make_groom (chưa đủ 20 xu để thay chú rể):
+      if (isAlreadyOccupied && type === 'make_groom' && coins < 20) {
+        showNotice('⚠️ CHÚ RỂ ĐÃ CÓ CHỦ!', `${u.name} cần tặng 20 xu (Kính Râm) để Thay Chú Rể!`, '🐷', 6000);
+        voice.say(`M: Cảm ơn ${speakableName(u.name)} đã tặng mười xu! Chú rể đã có người đứng rồi, bạn nào muốn thay rể thì tặng hai mươi xu nha!`, true);
+        return;
+      }
+
       setGroom(u);
-      showNotice('🐷 CHÚ RỂ MỚI LÊN LỄ ĐƯỜNG!', `Chào đón chú rể ${u.name} tặng Chú Heo (10 xu)!`, '👑', 6000);
-      voice.say(pick(GAME.challenges.makeGroom)!(speakableName(u.name)), true);
-    } else if (type === 'make_bride') {
+      setGroomBubble(null);
+      // Xóa người lên sân khấu khỏi dàn khách ở dưới; nếu có người cũ bị thay thì đưa người cũ về dưới dàn khách
+      setRealGuests((prev) => {
+        let list = prev.filter((g) => g.id !== u.id && g.name !== u.name);
+        if (oldGroom && oldGroom.id !== u.id) {
+          list = addOrUpdateGuest(list, oldGroom.id, oldGroom.name, oldGroom.avatar, 'join');
+        }
+        return list;
+      });
+      if (isAlreadyOccupied) {
+        showNotice('👑 THAY CHÚ RỂ THÀNH CÔNG (20 XU)!', `${u.name} vừa chi 20 xu cướp vị trí chú rể từ tay ${oldGroom.name}!`, '🐷', 7000);
+        voice.say(pick(GAME.challenges.replaceGroom)!(speakableName(u.name), speakableName(oldGroom.name)), true);
+      } else {
+        showNotice('🐷 CHÚ RỂ MỚI LÊN LỄ ĐƯỜNG (10 XU)!', `Chào đón chú rể ${u.name} tặng Chú Heo (10 xu)!`, '👑', 6000);
+        voice.say(pick(GAME.challenges.makeGroom)!(speakableName(u.name)), true);
+      }
+    } else if (type === 'make_bride' || type === 'replace_bride') {
+      const oldBride = bride;
+      const isAlreadyOccupied = !!oldBride && oldBride.id !== u.id;
+
+      // Nếu đã có cô dâu mà chỉ tặng 10 xu qua make_bride (chưa đủ 20 xu để thay cô dâu):
+      if (isAlreadyOccupied && type === 'make_bride' && coins < 20) {
+        showNotice('⚠️ CÔ DÂU ĐÃ CÓ CHỦ!', `${u.name} cần tặng 20 xu (Kính Râm) để Thay Cô Dâu!`, '🍀', 6000);
+        voice.say(`M: Cảm ơn ${speakableName(u.name)} đã tặng mười xu! Cô dâu đã có người đứng rồi, bạn nào muốn thay dâu thì tặng hai mươi xu nha!`, true);
+        return;
+      }
+
       setBride(u);
-      showNotice('🍀 CÔ DÂU MỚI LÊN LỄ ĐƯỜNG!', `Chào đón cô dâu ${u.name} tặng Cỏ 4 Lá (10 xu)!`, '👰', 6000);
-      voice.say(pick(GAME.challenges.makeBride)!(speakableName(u.name)), true);
+      setBrideBubble(null);
+      // Xóa người lên sân khấu khỏi dàn khách ở dưới; nếu có người cũ bị thay thì đưa người cũ về dưới dàn khách
+      setRealGuests((prev) => {
+        let list = prev.filter((g) => g.id !== u.id && g.name !== u.name);
+        if (oldBride && oldBride.id !== u.id) {
+          list = addOrUpdateGuest(list, oldBride.id, oldBride.name, oldBride.avatar, 'join');
+        }
+        return list;
+      });
+      if (isAlreadyOccupied) {
+        showNotice('👰 THAY CÔ DÂU THÀNH CÔNG (20 XU)!', `${u.name} vừa chi 20 xu cướp vị trí cô dâu từ tay ${oldBride.name}!`, '🍀', 7000);
+        voice.say(pick(GAME.challenges.replaceBride)!(speakableName(u.name), speakableName(oldBride.name)), true);
+      } else {
+        showNotice('🍀 CÔ DÂU MỚI LÊN LỄ ĐƯỜNG (10 XU)!', `Chào đón cô dâu ${u.name} tặng Cỏ 4 Lá (10 xu)!`, '👰', 6000);
+        voice.say(pick(GAME.challenges.makeBride)!(speakableName(u.name)), true);
+      }
     } else if (type === 'cancel') {
+      const oldGroom = groom;
+      const oldBride = bride;
       setGroom(null);
       setBride(null);
+      setGroomBubble(null);
+      setBrideBubble(null);
       setMcMarriedTo(null);
       setIsKissing(false);
+      setRealGuests((prev) => {
+        let list = [...prev];
+        if (oldGroom) list = addOrUpdateGuest(list, oldGroom.id, oldGroom.name, oldGroom.avatar, 'join');
+        if (oldBride) list = addOrUpdateGuest(list, oldBride.id, oldBride.name, oldBride.avatar, 'join');
+        return list;
+      });
       showNotice('💔 ĐÁM CƯỚI ĐÃ BỊ HỦY!', `${u.name} vừa tặng Hạc Giấy (99 xu) hủy hôn!`, '🕊️', 6000);
       voice.say(pick(GAME.challenges.cancelWedding)!(speakableName(u.name)), true);
     } else if (type === 'dance') {
@@ -208,8 +425,10 @@ export function useGame() {
       setIsKissing(true);
       setTimeout(() => setIsKissing(false), 12000);
       showNotice('💋 KHOẢNH KHẮC NGỌT NGÀO!', 'Chú rể hôn cô dâu — mọi người cùng chúc mừng!', '💕', 8000);
+      voice.say('M: ^Hoan hô! Chú rể hôn cô dâu nồng nàn quá! Cả sảnh cùng thả tim chúc mừng hai bạn nào!', true);
     } else if (type === 'gold') {
-      showNotice('🌹 MỪNG 1 CHỈ VÀNG!', `${u.name} tặng Hoa Hồng mừng 1 chỉ vàng!`, '🥇', 5000);
+      const goldCount = Math.max(1, coins);
+      showNotice(`🌹 MỪNG ${goldCount} CHỈ VÀNG!`, `${u.name} tặng Hoa Hồng mừng ${goldCount} chỉ vàng!`, '🥇', 5000);
       voice.say(pick(GAME.challenges.goldTael)!(speakableName(u.name)), false);
     }
   };
@@ -221,20 +440,44 @@ export function useGame() {
   }, [notice]);
 
   useEffect(() => {
+    if (!giftAlert) return;
+    const t = setTimeout(() => setGiftAlert(null), Math.max(1000, giftAlert.until - Date.now()));
+    return () => clearTimeout(t);
+  }, [giftAlert]);
+
+  useEffect(() => {
+    if (!endLive) return;
+    const t = setTimeout(() => {
+      setEndLive(null);
+      setGroom(null);
+      setBride(null);
+      setMcMarriedTo(null);
+      showNotice('🎉 TIỆC CƯỚI MỚI BẮT ĐẦU!', 'Phòng live đã mở tiệc mới sau màn End Live!', '💒', 6000);
+      voice.say('M: Phòng live đã mở tiệc mới sau màn bế mạc của đại gia! Mời bà con tiếp tục tham gia ngày vui nha!', true);
+    }, Math.max(1000, endLive.until - Date.now()));
+    return () => clearTimeout(t);
+  }, [endLive]);
+
+  useEffect(() => {
     if (!dongPhong) return;
     const t = setTimeout(() => setDongPhong(null), Math.max(1000, dongPhong.until - Date.now()));
     return () => clearTimeout(t);
   }, [dongPhong]);
 
-  // ---------- CHẾ ĐỘ TREO MÁY TỰ ĐỘNG HOÀN TOÀN (AFK AUTOPILOT) ----------
-  // Chủ kênh chỉ cần mở file BAT rồi đi làm việc khác: Game tự động hoàn toàn!
+  useEffect(() => {
+    if (!photoPoster) return;
+    const t = setTimeout(() => setPhotoPoster(null), Math.max(1000, photoPoster.until - Date.now()));
+    return () => clearTimeout(t);
+  }, [photoPoster]);
+
+  // ---------- TỰ ĐỘNG KHUẤY ĐỘNG PHIÊN LIVE ----------
   useEffect(() => {
     let step = 0;
     const autoTimer = setInterval(() => {
       step++;
 
-      // 1. Mỗi 2-3 giây: Khách trong sảnh tự động comment nổi bong bóng chat
-      if (step % 2 === 0) {
+      // 1. Mỗi 10 giây: Một trong các khách dưới sân khấu ngẫu nhiên comment tạo không khí
+      if (step % 5 === 0 && realGuests.length > 0) {
         const chats = [
           'Chúc mừng hai bạn! 🎉',
           'Đẹp đôi quá trời',
@@ -242,66 +485,33 @@ export function useGame() {
           'Hôn đi hôn đi 💋',
           'Cô dâu xinh xắn ghê',
           'Chú rể bảnh trai quá',
-          'Cưới liền tay nào',
+          'Cưới liền tay nào bà con',
           'Vui quá bà con ơi',
           'Hai họ đẹp lòng ghê',
-          'Trăm năm hạnh phúc nha',
+          'Trăm năm hạnh phúc nha ❤️',
+          'Ai tặng Chú Heo lên làm rể đi kìa 🐷',
+          'Ai tặng Cỏ Bốn Lá làm cô dâu đi 🍀',
         ];
         const randomGuest = realGuests[Math.floor(Math.random() * realGuests.length)];
         const comment = chats[Math.floor(Math.random() * chats.length)];
-        setRealGuests((prev) => addGuestBubble(prev, randomGuest.id, randomGuest.name, comment));
+        setRealGuests((prev) => addGuestBubble(prev, randomGuest.id, randomGuest.name, comment, randomGuest.avatar));
       }
 
-      // 2. Tự động mai mối & tổ chức đám cưới khi sân khấu đang trống
-      if (!groom && !bride && !dongPhong && !mcMarriedTo) {
-        if (step % 12 === 0) {
-          const mList = realGuests.filter((x) => x.sprite.startsWith('guest_m'));
-          const fList = realGuests.filter((x) => x.sprite.startsWith('guest_f'));
-          const g = mList[Math.floor(Math.random() * mList.length)] || realGuests[0];
-          const b = fList[Math.floor(Math.random() * fList.length)] || realGuests[1];
-
-          setGroom({ id: g.id, name: g.name, avatar: g.avatar });
-          setBride({ id: b.id, name: b.name, avatar: b.avatar });
-          showNotice('🎉 ĐÁM CƯỚI TỰ ĐỘNG BẮT ĐẦU!', `${g.name} & ${b.name} bước lên lễ đường!`, '💍', 8000);
-          voice.say(`M: Kính thưa quan viên hai họ! | Chào mừng chú rể ${g.name} và cô dâu ${b.name} bước lên sân khấu!`, false);
-
-          // Sau 9 giây: Chú rể bế cô dâu hôn nhau (khoảnh khắc ngọt ngào)
-          setTimeout(() => {
-            setIsKissing(true);
-            setTimeout(() => setIsKissing(false), 14000);
-          }, 9000);
-
-          // Sau 42 giây: Tự động kết thúc đám cũ để đón đám mới (nếu chưa có người thật donate)
-          setTimeout(() => {
-            setGroom((cur) => (cur?.id === g.id ? null : cur));
-            setBride((cur) => (cur?.id === b.id ? null : cur));
-          }, 42000);
-        }
+      // 2. Mỗi 25-30 giây nếu MC đang rảnh: MC cất tiếng nhắc cách chơi và khuấy động live
+      if (step % 13 === 0 && !voice.busy) {
+        const hypeLines = [
+          'M: Bà con ơi, cùng bình luận chúc mừng và thả tim chúc phúc cho ngày vui hôm nay nha!',
+          'M: Ai muốn làm chú rể bảnh trai thì tặng ngay một Chú Heo mười xu bước lên lễ đường nào!',
+          'M: Các bạn nữ xinh xắn muốn làm cô dâu lộng lẫy thì tặng Cỏ Bốn Lá mười xu nha bà con!',
+          'M: Bình luận dzô để nâng ly, gõ nhảy để ra sàn quẩy, hoặc tặng Quả Đào ba mươi xu để cả sảnh cùng quẩy nhé!',
+          'M: Ai muốn cưới MC thì bắn tim chín mươi chín xu, muốn hủy hôn thì tặng hạc giấy chín mươi chín xu nha!',
+        ];
+        voice.sayMinor(hypeLines[Math.floor(Math.random() * hypeLines.length)]);
       }
-
-      // 3. Mỗi 45 giây: Tự động có khách mừng cưới hoặc góp vui nhảy
-      if (step % 30 === 0 && !dongPhong) {
-        const g = realGuests[Math.floor(Math.random() * realGuests.length)];
-        const r = Math.random();
-        if (r < 0.45) {
-          // Góp vui nhảy (30 xu)
-          setIsDancing(true);
-          setTimeout(() => setIsDancing(false), 14000);
-          showNotice('💃 QUẨY CẢ SẢNH!', `${g.name} vừa tặng 30 xu mở sàn quẩy!`, '🍑', 5000);
-          voice.say(`M: Cả sảnh cùng quẩy lên nào bà con ơi! | Cảm ơn ${g.name} đã tặng ba mươi xu mở sàn nhảy!`, false);
-        } else {
-          // Mừng 1 chỉ vàng
-          const prev = s.giftTotal.get(g.id);
-          s.giftTotal.set(g.id, { name: g.name, coins: (prev?.coins ?? 0) + 1 });
-          saveTop(s.giftTotal);
-          setTop(topRows(s.giftTotal));
-          showNotice('🌹 MỪNG 1 CHỈ VÀNG!', `${g.name} vừa mừng 1 chỉ vàng!`, '🥇', 4000);
-        }
-      }
-    }, 1500);
+    }, 2000);
 
     return () => clearInterval(autoTimer);
-  }, [!groom, !bride, !dongPhong, !mcMarriedTo, realGuests]);
+  }, [realGuests]);
 
   const [s] = useState(() => ({
     greeter: new NameBatcher(
@@ -977,15 +1187,43 @@ export function useGame() {
       // comment thường: bong bóng trên đầu (đã che từ bậy). Không đọc nguyên văn.
       world.say(id, maskBanned(e.comment));
 
-      // Hiển thị trên dàn khách người thật
+      // Hiển thị trên dàn khách người thật hoặc Chú Rể / Cô Dâu trên sân khấu
       const guestName = shown(id) || e.nickname || e.username;
-      setRealGuests((prev) => addGuestBubble(prev, id, guestName, e.comment, e.avatar));
       const cleanComment = (e.comment || '').toLowerCase().trim();
+      const nSpoken = speakableName(guestName);
+      const cleanText = maskBanned(e.comment);
+      const shortComment = cleanText.length > 28 ? cleanText.slice(0, 27) + '…' : cleanText;
+
+      const isGroom = groom && (groom.id === id || groom.name === guestName || groom.name === e.username || groom.name === e.nickname);
+      const isBride = bride && (bride.id === id || bride.name === guestName || bride.name === e.username || bride.name === e.nickname);
+      const isMcPartner = mcMarriedTo && (mcMarriedTo.id === id || mcMarriedTo.name === guestName || mcMarriedTo.name === e.username || mcMarriedTo.name === e.nickname);
+
+      if (isGroom) {
+        setGroomBubble({ text: shortComment, until: Date.now() + 4500 });
+      } else if (isBride) {
+        setBrideBubble({ text: shortComment, until: Date.now() + 4500 });
+      } else if (isMcPartner) {
+        setMcPartnerBubble({ text: shortComment, until: Date.now() + 4500 });
+      } else {
+        setRealGuests((prev) => addGuestBubble(prev, id, guestName, e.comment, e.avatar));
+      }
+
       if (cleanComment.includes('hôn đi') || cleanComment.includes('hon di')) {
         triggerChallenge('kiss', { id, name: guestName, avatar: e.avatar });
       } else if (cleanComment.includes('quẩy') || cleanComment.includes('nhảy') || cleanComment.includes('nhay')) {
         setIsDancing(true);
         setTimeout(() => setIsDancing(false), 12000);
+        if (s.actLimit('dance')) {
+          voice.sayMinor(`M: Quẩy lên nào bà con ơi! | Cảm ơn ${nSpoken} đã ra sàn nhảy!`);
+        }
+      } else if (cleanComment.includes('chúc mừng') || cleanComment.includes('chuc mung') || cleanComment.includes('chúc phúc') || cleanComment.includes('chuc phuc')) {
+        if (s.actLimit('wish')) {
+          voice.sayMinor(`M: Cảm ơn lời chúc rất đẹp từ bạn ${nSpoken} nha!`);
+        }
+      } else if (cleanComment.includes('dzô') || cleanComment.includes('dzo') || cleanComment.includes('zô') || cleanComment.includes('zo')) {
+        if (s.actLimit('dzo')) {
+          voice.sayMinor(`M: Một hai ba dzô! Cạn ly mừng ngày vui nào bạn ${nSpoken} ơi!`);
+        }
       }
     },
 
@@ -995,6 +1233,14 @@ export function useGame() {
       const name = meet(id, e.nickname, e.avatar);
       const coins = e.diamondCount * e.repeatCount;
       setLastGift({ ...e, nickname: name, coins });
+
+      // Đảm bảo user có mặt ngay trên sàn tiệc cưới dưới sân khấu (nếu chưa phải dâu rể trên sân khấu)
+      const isGroom = groom && (groom.id === id || groom.name === name);
+      const isBride = bride && (bride.id === id || bride.name === name);
+      if (!isGroom && !isBride) {
+        setRealGuests((prev) => addOrUpdateGuest(prev, id, name, e.avatar, 'gift'));
+      }
+
       const w = s.w;
       if (w?.phase === 'proposal') {
         // người được hỏi tặng quà = đồng ý luôn; người được @ chưa vào tiệc mà giờ tặng quà = ra cổng hoa rồi đồng ý
@@ -1016,38 +1262,25 @@ export function useGame() {
         pkAtk = true;
       }
       if (!pkAtk) bless(id, coins);
-      // bảng Top đại gia mừng cưới (góc dưới phải): 7 người tặng nhiều xu nhất cả buổi
-      const prev = s.giftTotal.get(id);
-      s.giftTotal.set(id, { name, coins: (prev?.coins ?? 0) + coins });
-      saveTop(s.giftTotal);
-      setTop(topRows(s.giftTotal));
 
-      // Kích hoạt thử thách donate viral (Chuẩn giá quà TikTok Việt Nam)
-      const gNameLower = (e.giftName || '').toLowerCase();
-      if (coins >= 150 || gNameLower.includes('động phòng') || gNameLower.includes('dong phong') || gNameLower.includes('lâu đài')) {
-        triggerChallenge('dong_phong', { id, name, avatar: e.avatar }, coins);
-      } else if (gNameLower.includes('cưới mc') || gNameLower.includes('cuoi mc') || gNameLower.includes('bắn tim') || gNameLower.includes('kính râm')) {
-        triggerChallenge('marry_mc', { id, name, avatar: e.avatar }, coins);
-      } else if (gNameLower.includes('hạc') || gNameLower.includes('hủy') || gNameLower.includes('huy') || gNameLower.includes('crane')) {
-        triggerChallenge('cancel', { id, name, avatar: e.avatar }, coins);
-      } else if (gNameLower.includes('heo') || gNameLower.includes('pig') || (coins === 10 && (gNameLower.includes('chú rể') || gNameLower.includes('rể')))) {
-        triggerChallenge('make_groom', { id, name, avatar: e.avatar }, coins);
-      } else if (gNameLower.includes('cỏ') || gNameLower.includes('clover') || (coins === 10 && (gNameLower.includes('cô dâu') || gNameLower.includes('dâu')))) {
-        triggerChallenge('make_bride', { id, name, avatar: e.avatar }, coins);
-      } else if (coins >= 30 || gNameLower.includes('donut') || gNameLower.includes('đào') || gNameLower.includes('dao') || gNameLower.includes('peach') || gNameLower.includes('nhảy')) {
-        triggerChallenge('dance', { id, name, avatar: e.avatar }, coins);
-      } else if (coins === 10) {
-        // Nếu 10 xu mà không rõ tên quà: phân bổ ngẫu nhiên làm chú rể hoặc cô dâu
-        if (Math.random() < 0.5) {
-          triggerChallenge('make_groom', { id, name, avatar: e.avatar }, coins);
-        } else {
-          triggerChallenge('make_bride', { id, name, avatar: e.avatar }, coins);
-        }
-      } else if (coins === 99) {
-        // 99 xu trên TikTok là Hạc Giấy hoặc Bắn Tim
-        triggerChallenge('cancel', { id, name, avatar: e.avatar }, coins);
-      } else {
-        triggerChallenge('gold', { id, name, avatar: e.avatar }, coins);
+      // Kích hoạt thử thách donate theo Bảng Giá: BẮT BUỘC đúng cả tên quà VÀ đúng giá xu đơn vị
+      const unitCoins = e.diamondCount || 1;
+      const guestAvatar = e.avatar || avatars.current.get(id) || '';
+      const guestUser = { id, name, avatar: guestAvatar };
+      if (guestAvatar) {
+        if (groom && groom.id === id && !groom.avatar) setGroom({ ...groom, avatar: guestAvatar });
+        if (bride && bride.id === id && !bride.avatar) setBride({ ...bride, avatar: guestAvatar });
+      }
+
+      const matchedChallenge = matchPriceTableGift(e.giftName || '', unitCoins, !!groom, !!bride);
+      if (matchedChallenge) {
+        triggerChallenge(matchedChallenge, guestUser, coins);
+      } else if (coins > 0) {
+        // Sai tên quà hoặc sai giá xu quy định: chỉ ghi nhận Sổ Vàng, không kích hoạt thử thách và không spam thông báo
+        const prev = s.giftTotal.get(id);
+        s.giftTotal.set(id, { name, coins: (prev?.coins ?? 0) + coins });
+        saveTop(s.giftTotal);
+        setTop(topRows(s.giftTotal));
       }
       if (s.duyen && !s.duyen.maker && Date.now() < s.duyen.until && world.has(id)) {
         s.duyen.maker = id;
@@ -1085,6 +1318,14 @@ export function useGame() {
     onMember: (e) => {
       const name = safeName(e.nickname, e.username);
       const n = speakableName(name);
+
+      // Thêm ngay 1 người đứng dưới sân khấu với bảng tên trên đầu (nếu chưa phải dâu rể trên sân khấu)
+      const isGroom = groom && (groom.id === e.username || groom.name === name);
+      const isBride = bride && (bride.id === e.username || bride.name === name);
+      if (!isGroom && !isBride) {
+        setRealGuests((prev) => addOrUpdateGuest(prev, e.username, name, e.avatar, 'join'));
+      }
+
       if (n !== 'bạn') s.greeter.add(e.username, n);
       // người lướt qua: cho vào ngồi ăn cỗ luôn (người comment vẫn được ưu tiên ghế)
       if (!world.has(e.username)) {
@@ -1101,10 +1342,22 @@ export function useGame() {
     },
 
     onFollow: (e) => {
-      if (s.follows.first(e.username) && !inCeremony()) voice.sayMinor(GAME.thankFollow(speakableName(safeName(e.nickname, e.username))));
+      const name = safeName(e.nickname, e.username);
+      const isGroom = groom && (groom.id === e.username || groom.name === name);
+      const isBride = bride && (bride.id === e.username || bride.name === name);
+      if (!isGroom && !isBride) {
+        setRealGuests((prev) => addOrUpdateGuest(prev, e.username, name, e.avatar, 'follow'));
+      }
+      if (s.follows.first(e.username) && !inCeremony()) voice.sayMinor(GAME.thankFollow(speakableName(name)));
     },
 
     onLike: (e) => {
+      const name = safeName(e.nickname, e.username);
+      const isGroom = groom && (groom.id === e.username || groom.name === name);
+      const isBride = bride && (bride.id === e.username || bride.name === name);
+      if (!isGroom && !isBride) {
+        setRealGuests((prev) => addOrUpdateGuest(prev, e.username, name, avatars.current.get(e.username), 'like'));
+      }
       // mốc tim theo vòng: 100 pháo giấy, 300 cả sảnh quẩy, 1000 xe hoa; qua 1000 thì bắt đầu vòng mới
       if (s.likeCycle === null) s.likeCycle = e.totalLikes - e.likeCount;
       const M = GAME.likeMilestones;
@@ -1438,11 +1691,20 @@ export function useGame() {
     setTheme,
     groom,
     bride,
+    groomBubble,
+    brideBubble,
     mcMarriedTo,
+    mcCelebration,
+    mcPartnerBubble,
     dongPhong,
+    photoPoster,
+    closePhotoPoster,
+    endLive,
+    resetWedding,
     isDancing,
     isKissing,
     notice,
+    giftAlert,
     realGuests,
     triggerChallenge,
   };
